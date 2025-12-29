@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NYE 2026: OOTLANKA NEON JUNGLE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-green: #39ff14;
+            --neon-blue: #00f3ff;
+            --neon-red: #ff073a;
+            --neon-orange: #ff5e00;
+            --bg-dark: #050505;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg-dark);
+            color: white;
+            overflow: hidden; /* Prevent scrolling until the end */
+        }
+
+        /* ================= ANIMATION KEYFRAMES ================= */
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green) inset; }
+            50% { box-shadow: 0 0 30px var(--neon-green), 0 0 60px var(--neon-green) inset; }
+            100% { box-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green) inset; }
+        }
+
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+            20%, 24%, 55% { opacity: 0.4; }
+        }
+
+        @keyframes zoomInFlash {
+            0% { transform: scale(0.5); opacity: 0; filter: blur(10px); }
+            50% { opacity: 1; filter: blur(0px); color: white; }
+            70% { transform: scale(1.2); color: var(--neon-blue); }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        @keyframes fireFlicker {
+            0% { transform: scale(1); opacity: 0.8; }
+            25% { transform: scale(1.1); opacity: 1; }
+            50% { transform: scale(0.9); opacity: 0.9; }
+            75% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        /* ================= SCREEN 1: THE INTRO ================= */
+        #screen-intro {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, #111 0%, #000 100%);
+            z-index: 100;
+            position: relative;
+        }
+
+        .intro-text {
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+            opacity: 0.7;
+            animation: flicker 3s infinite;
+        }
+
+        .start-btn {
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--neon-green);
+            background: transparent;
+            border: 2px solid var(--neon-green);
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: pulseGlow 2s infinite;
+            transition: all 0.3s;
+        }
+
+        .start-btn:active {
+            transform: scale(0.95);
+            background: var(--neon-green);
+            color: black;
+        }
+
+        /* ================= SCREEN 2: THE JOURNEY (Transition) ================= */
+        #screen-journey {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            display: none; /* Hidden initially */
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            perspective: 1000px;
+        }
+
+        .journey-text {
+            position: absolute;
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            text-transform: uppercase;
+            opacity: 0;
+            width: 100%;
+        }
+
+        /* Speed lines effect */
+        .speed-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-radial-gradient(circle at center, transparent 0, transparent 2px, rgba(255,255,255,0.1) 3px, transparent 4px);
+            animation: zoomInFlash 0.5s infinite linear;
+            opacity: 0.2;
+        }
+
+
+        /* ================= SCREEN 3: THE MAIN INTERFACE (The Clearing) ================= */
+        #screen-main {
+            display: none; /* Hidden initially */
+            min-height: 100vh;
+            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(5,20,5,0.8) 100%), url('https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1080&q=80');
+            background-size: cover;
+            background-position: center;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto; /* Allow scrolling here */
+        }
+
+        .header-main {
+            text-align: center;
+            margin-top: 20px;
+            animation: flicker 5s infinite;
+        }
+        .header-main h1 {
+            font-size: 2.5rem;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+        .header-main p {
+            font-size: 1.2rem;
+            color: #aaa;
+            letter-spacing: 2px;
+        }
+
+        /* The central fire visualization */
+        .fire-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 40px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .fire-core {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--neon-orange), var(--neon-red));
+            border-radius: 50%;
+            box-shadow: 0 0 50px var(--neon-orange), 0 0 100px var(--neon-red);
+            animation: fireFlicker 1s infinite alternate;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-align: center;
+            text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+            border: 3px solid rgba(255,255,255,0.5);
+        }
+
+        /* The interactive menu grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
+
+        .menu-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .menu-item:hover {
+            background: rgba(0, 243, 255, 0.1);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+
+        .menu-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .menu-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Modal for details */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none; /* Hidden initially */
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            padding: 20px;
+        }
+        .modal-content {
+            background: #111;
+            border: 2px solid var(--neon-blue);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            text-align: left;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            color: var(--neon-red);
+            cursor: pointer;
+        }
+        .modal-body h2 {
+            color: var(--neon-green);
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 10px;
+        }
+        .modal-body p, .modal-body li {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #ddd;
+            margin-bottom: 10px;
+        }
+        .highlight-text {
+            color: var(--neon-orange);
+            font-weight: bold;
+        }
+
+        /* Utility classes for JS toggling */
+        .hidden { display: none !important; }
+        .flex { display: flex !important; }
+        .block { display: block !important; }
+
+    </style>
+</head>
+<body>
+
+    <div id="screen-intro">
+        <p class="intro-text">OOTLANKA PROTOCOL INITIATED...</p>
+        <button class="start-btn" onclick="startJourney()">IGNITE THE TRACTOR</button>
+    </div>
+
+    <div id="screen-journey">
+        <div class="speed-lines"></div>
+        <h2 class="journey-text" id="j-text1">ENGINE STARTED...</h2>
+        <h2 class="journey-text" id="j-text2" style="color: var(--neon-blue)">VENKOJIGARIPALLE DEPARTURE</h2>
+        <h2 class="journey-text" id="j-text3" style="color: var(--neon-orange)">ENTERING FOREST...</h2>
+        <h2 class="journey-text" id="j-text4" style="color: var(--neon-green); font-size: 4rem;">WELCOME TO THE JUNGLE</h2>
+    </div>
+
+    <div id="screen-main">
+        <header class="header-main">
+            <h1>NYE 2026 ODYSSEY</h1>
+            <p>Munirathna Farm | Ootlanka Forest</p>
+        </header>
+
+        <div class="fire-container">
+            <div class="fire-core">
+                NYE<br>HQ
+            </div>
+        </div>
+
+        <div class="menu-grid">
+            <div class="menu-item" onclick="openModal('modal-ride')">
+                <span class="menu-icon" style="color: var(--neon-blue);">🚜</span>
+                <span class="menu-title">The Journey</span>
+            </div>
+             <div class="menu-item" onclick="openModal('modal-feast')">
+                 <span class="menu-icon" style="color: var(--neon-orange);">🍗</span>
+                <span class="menu-title">The Mega Feast</span>
+            </div>
+             <div class="menu-item" onclick="openModal('modal-vibe')">
+                 <span class="menu-icon" style="color: var(--neon-green);">🎤</span>
+                <span class="menu-title">The Vibe & Sound</span>
+            </div>
+             <div class="menu-item" onclick="openModal('modal-rules')">
+                 <span class="menu-icon" style="color: var(--neon-red);">⚠️</span>
+                <span class="menu-title">The Code</span>
+            </div>
+        </div>
+
+        <p style="text-align: center; margin-top: 20px; opacity: 0.6; font-size: 0.9rem;">Tap the icons to explore the plan.</p>
+    </div>
+
+    <div id="modal-ride" class="modal-overlay" onclick="closeOutside(event, 'modal-ride')">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('modal-ride')">&times;</span>
+            <div class="modal-body">
+                <h2>🚜 The Tractor Expedition</h2>
+                <p>We move as ONE unit. This is where the fun begins.</p>
+                <ul>
+                    <li><strong>Meet:</strong> Venkojigaripalle Village.</li>
+                    <li><strong>Park:</strong> Secure bike parking at friends' homes.</li>
+                    <li><strong>Depart:</strong> Everyone piles into the Tractor for the ride into the Ootlanka forest via Nimmanapalle.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-feast" class="modal-overlay" onclick="closeOutside(event, 'modal-feast')">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('modal-feast')">&times;</span>
+            <div class="modal-body">
+                <h2>🍗 The Jungle Kitchen</h2>
+                <p><strong>PHASE 1 (7:30 PM - 9:45 PM):</strong><br> Arrive & Cook. Hot Chapatis with Spicy Chicken/Veg Curries cooked on fire.</p>
+                <p><strong>PHASE 2 (After 12 AM): <span class="highlight-text">THE MEGA COOKOUT</span></strong><br> We are cutting 2 Big Cocks (approx 12KG Chicken!).</p>
+                <ul>
+                    <li>Chicken Biriyani</li>
+                    <li>Crispy Chicken Pakoda</li>
+                    <li>Midnight Curry</li>
+                </ul>
+                <p>We eat till sunrise!</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-vibe" class="modal-overlay" onclick="closeOutside(event, 'modal-vibe')">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('modal-vibe')">&times;</span>
+            <div class="modal-body">
+                <h2>🎤 Sound & Soul</h2>
+                <p>We have the Generator. We have the Focus Lights. We have the DJ setup.</p>
+                <ul>
+                    <li><strong>Gang Dancing:</strong> Non-stop energy.</li>
+                    <li><strong>Open Mic Session:</strong> Grab the mic. Share your 2025 problems, sad moments, and happy memories. Leave the baggage in the old year.</li>
+                    <li><strong>12:00 AM:</strong> Cake cutting under the stars.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+     <div id="modal-rules" class="modal-overlay" onclick="closeOutside(event, 'modal-rules')">
+        <div class="modal-content" style="border-color: var(--neon-red);">
+            <span class="modal-close" onclick="closeModal('modal-rules')">&times;</span>
+            <div class="modal-body">
+                <h2 style="color: var(--neon-red);">⚠️ STRICT PROTOCOL</h2>
+                <p>To ensure maximum enjoyment for the brotherhood:</p>
+                <ul>
+                    <li class="highlight-text">NO OVER-DRINKING.</li>
+                    <li class="highlight-text">STRICTLY NO FIGHTING OR BULLYING.</li>
+                </ul>
+                <p>Entry Fee: Minimum Rs.300 (Choice for more).</p>
+                <p>Return home around 6 AM - 7 AM.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Main Javascript Logic
+
+        function startJourney() {
+            // Hide Intro, Show Journey Screen
+            document.getElementById('screen-intro').style.display = 'none';
+            document.getElementById('screen-journey').style.display = 'flex';
+
+            // Sequence the flashing text animations
+            const t1 = document.getElementById('j-text1');
+            const t2 = document.getElementById('j-text2');
+            const t3 = document.getElementById('j-text3');
+            const t4 = document.getElementById('j-text4');
+
+            // Animation sequence using Timeouts
+            t1.style.animation = "zoomInFlash 1.5s forwards";
+            
+            setTimeout(() => {
+                t2.style.animation = "zoomInFlash 1.5s forwards";
+            }, 1400);
+
+            setTimeout(() => {
+                t3.style.animation = "zoomInFlash 1.5s forwards";
+            }, 2800);
+
+            setTimeout(() => {
+                t4.style.animation = "zoomInFlash 2s forwards";
+            }, 4200);
+
+            // End journey and show main screen
+            setTimeout(() => {
+                document.getElementById('screen-journey').style.display = 'none';
+                document.getElementById('screen-main').style.display = 'flex';
+                // Allow scrolling again
+                document.body.style.overflow = 'auto'; 
+            }, 6000);
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+            // Prevent background scrolling when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+             // Re-enable background scrolling
+             document.body.style.overflow = 'auto';
+        }
+
+        // Close modal if clicking outside the content box
+        function closeOutside(event, modalId) {
+            if (event.target === document.getElementById(modalId)) {
+                closeModal(modalId);
+            }
+        }
+    </script>
+</body>
+</html>
