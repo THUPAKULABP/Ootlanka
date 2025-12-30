@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The Ootlanka Legend 2026</title>
+    <title>NYE 2026: The Enchanted Forest</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Ramabhadra&family=Orbitron:wght@500;900&family=Great+Vibes&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Great+Vibes&family=Playfair+Display:wght@400;700&family=Ramabhadra&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -16,483 +16,512 @@
     <style>
         :root {
             --gold: #FFD700;
-            --deep-forest: #020a05;
-            --fire-red: #ff4d00;
-            --moon-glow: #e0f7fa;
-            --glass: rgba(0, 20, 10, 0.8);
+            --gold-glow: #FDB931;
+            --night-blue: #020510;
+            --forest-deep: #051405;
+            --neon-moon: #E0F7FA;
+            --fire-orange: #FF4500;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body { 
-            background-color: var(--deep-forest); 
-            color: white; 
+            background-color: var(--night-blue); 
             font-family: 'Montserrat', sans-serif; 
-            overflow: hidden; /* Lock scroll for intro */
+            color: white; 
+            overflow-x: hidden;
+            overflow-y: hidden; /* Locked until intro done */
         }
 
-        /* --- SOUND EFFECTS --- */
-        #bgm, #open-sfx { display: none; }
+        /* --- LAYERS --- */
+        
+        /* 1. The Giant Moon (Fixed Background) */
+        .moon-layer {
+            position: fixed; top: 5%; right: 10%; width: 150px; height: 150px;
+            background: radial-gradient(circle, #fff, #ddd 40%, transparent 70%);
+            border-radius: 50%; box-shadow: 0 0 60px rgba(255,255,255,0.3);
+            z-index: -5; opacity: 0.8; mix-blend-mode: screen;
+            animation: moonFloat 10s infinite alternate ease-in-out;
+        }
+        @keyframes moonFloat { from {transform:translateY(0);} to {transform:translateY(-20px);} }
 
-        /* --- BACKGROUND ELEMENTS --- */
-        #snow-canvas, #fire-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-        .moon { 
-            position: fixed; top: 5%; right: 5%; width: 120px; height: 120px; 
-            background: radial-gradient(circle, #fff, #888); 
-            border-radius: 50%; box-shadow: 0 0 50px var(--moon-glow); 
-            opacity: 0.6; z-index: -2; 
+        /* 2. Fog & Snow */
+        #fog-canvas, #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -4; pointer-events: none; }
+        
+        /* 3. The Bonfire (Fixed Bottom) */
+        #fire-canvas {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 40vh;
+            z-index: -1; pointer-events: none; opacity: 0.8; mix-blend-mode: screen;
         }
 
-        /* --- SCENE 1: THE INTERACTIVE ENVELOPE --- */
-        #invitation-cover {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, #111, #000);
-            z-index: 10000; display: flex; justify-content: center; align-items: center;
+        /* --- UI: THE GOLDEN GATE (Language) --- */
+        #gate-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000;
+            background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
 
-        .envelope {
-            width: 300px; height: 200px; background: #1a1a1a;
-            border: 2px solid var(--gold); position: relative;
-            transform-style: preserve-3d; cursor: pointer;
-            box-shadow: 0 20px 50px rgba(0,0,0,1);
-            border-radius: 5px;
-        }
-
-        .envelope-top {
-            position: absolute; top: 0; left: 0; width: 0; height: 0;
-            border-left: 150px solid transparent; border-right: 150px solid transparent;
-            border-top: 100px solid #222; z-index: 2; transform-origin: top;
-            transition: transform 0.6s;
-        }
-
-        .seal {
-            position: absolute; top: 70px; left: 120px; width: 60px; height: 60px;
-            background: radial-gradient(circle, #ff0000, #600);
-            border-radius: 50%; z-index: 3; border: 2px solid var(--gold);
-            display: flex; justify-content: center; align-items: center;
-            font-family: 'Great Vibes'; color: var(--gold); font-size: 1.5rem;
-        }
-
-        .envelope.open .envelope-top { transform: rotateX(180deg); }
-
-        .btn-open-text {
-            position: absolute; bottom: -60px; width: 100%; text-align: center;
-            font-family: 'Cinzel Decorative'; color: var(--gold);
-            letter-spacing: 3px; animation: pulse 2s infinite;
-        }
-
-        /* --- SCENE 2: LANGUAGE GATE --- */
-        #language-gate {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 9000; display: none;
-            flex-direction: column; justify-content: center; align-items: center;
-            backdrop-filter: blur(20px);
+        .gate-logo {
+            font-family: 'Cinzel'; font-size: 3rem; color: var(--gold);
+            text-shadow: 0 0 20px var(--gold-glow); margin-bottom: 40px; text-align: center;
+            opacity: 0; transform: scale(0.8);
         }
 
         .lang-btn {
-            background: transparent; border: 2px solid var(--gold); color: var(--gold);
-            padding: 20px 50px; margin: 15px; font-size: 1.5rem;
-            font-family: 'Cinzel Decorative', 'Ramabhadra'; border-radius: 10px;
-            cursor: pointer; transition: 0.4s; width: 280px; text-transform: uppercase;
+            background: transparent; border: 1px solid var(--gold); color: var(--gold);
+            padding: 18px 50px; margin: 15px; font-size: 1.2rem; font-family: 'Cinzel', 'Ramabhadra';
+            cursor: pointer; position: relative; overflow: hidden; transition: 0.4s;
+            width: 260px; text-transform: uppercase; letter-spacing: 2px;
         }
-        .lang-btn:hover { background: var(--gold); color: black; box-shadow: 0 0 40px var(--gold); }
-
-        /* --- MAIN APP CONTENT --- */
-        #main-app { 
-            position: relative; z-index: 10; display: none; opacity: 0; 
-            padding-bottom: 100px;
+        .lang-btn::after {
+            content: ''; position: absolute; width: 0; height: 100%; top: 0; left: 0;
+            background: var(--gold); z-index: -1; transition: 0.4s;
         }
+        .lang-btn:hover::after { width: 100%; }
+        .lang-btn:hover { color: black; box-shadow: 0 0 40px var(--gold); }
 
-        .hero {
-            height: 100vh; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; text-align: center;
-            padding: 20px;
+        /* --- MAIN CONTENT --- */
+        #main-scroll {
+            position: relative; z-index: 10; width: 100%; display: none; opacity: 0;
         }
 
-        /* VIP Guest Photo */
-        .vip-card {
-            width: 180px; height: 180px; border-radius: 50%; 
-            border: 4px solid var(--gold); margin-bottom: 20px;
-            position: relative; display: none;
-            box-shadow: 0 0 30px var(--gold);
+        .container { max-width: 900px; margin: 0 auto; padding-bottom: 150px; position: relative; }
+
+        /* The Growing Vine Line (SVG) */
+        .vine-svg-container {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 100px; height: 100%; pointer-events: none; z-index: 0;
         }
-        .vip-card img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
         
-        .title-cinematic {
-            font-family: 'Cinzel Decorative'; font-size: 3.2rem;
-            background: linear-gradient(to bottom, #fff, var(--gold));
-            -webkit-background-clip: text; color: transparent;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-            margin-bottom: 10px; line-height: 1.1;
+        /* HERO */
+        .hero {
+            height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; position: relative;
         }
 
-        /* Scrolling Vines & Flowers */
-        .vine-line {
-            position: absolute; left: 50%; top: 100vh; bottom: 0; width: 2px;
-            background: var(--gold); transform: translateX(-50%);
-            z-index: -1; opacity: 0.3;
+        .vip-photo-frame {
+            width: 180px; height: 180px; position: relative; margin-bottom: 20px;
+            display: none; /* Hidden unless user has photo */
+        }
+        .vip-glow {
+            position: absolute; inset: -10px; border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent, var(--gold), transparent);
+            animation: rotateGlow 4s linear infinite;
+        }
+        .vip-img {
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+            border: 2px solid var(--gold); position: relative; z-index: 2;
+        }
+        @keyframes rotateGlow { 100% { transform: rotate(360deg); } }
+
+        .cinematic-title {
+            font-family: 'Cinzel'; font-size: 3.5rem; line-height: 1;
+            background: linear-gradient(to bottom, #fff, #C5A000); -webkit-background-clip: text; color: transparent;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8); margin-bottom: 10px;
         }
 
-        .event-card {
-            background: var(--glass); border: 1px solid rgba(255,215,0,0.2);
-            padding: 30px; border-radius: 20px; margin: 50px 20px;
-            backdrop-filter: blur(10px); position: relative;
-            transform: translateY(100px); opacity: 0;
-            transition: all 0.8s;
+        .scroll-hint {
+            position: absolute; bottom: 30px; animation: pulse 2s infinite; color: var(--gold);
+            font-family: 'Cinzel'; font-size: 0.8rem; letter-spacing: 3px;
         }
 
-        .event-card.active { transform: translateY(0); opacity: 1; }
-
-        /* Flower Bloom */
-        .flower {
-            position: absolute; left: -15px; top: -15px; font-size: 2rem;
-            color: var(--gold); animation: bloom 2s forwards; opacity: 0;
+        /* TIMELINE SECTIONS */
+        .timeline-section {
+            position: relative; min-height: 400px; display: flex; align-items: center;
+            justify-content: center; margin: 50px 0;
         }
 
-        .card-header { font-family: 'Cinzel Decorative'; font-size: 1.6rem; color: var(--gold); margin-bottom: 15px; }
-        .card-body { font-size: 1.1rem; line-height: 1.8; color: #eee; }
-        .highlight { color: #00ffcc; font-weight: bold; }
+        .flower-marker {
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(0);
+            width: 60px; height: 60px; z-index: 5; filter: drop-shadow(0 0 10px var(--gold));
+        }
 
-        /* --- ADMIN PANEL --- */
+        .content-card {
+            width: 40%; background: rgba(10, 20, 15, 0.7);
+            border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 15px;
+            padding: 25px; backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            position: absolute; opacity: 0; transform: translateY(50px);
+        }
+
+        .left-card { left: 5%; text-align: right; border-right: 3px solid var(--gold); }
+        .right-card { right: 5%; text-align: left; border-left: 3px solid var(--gold); }
+
+        .card-icon { font-size: 2rem; color: var(--gold); margin-bottom: 10px; }
+        .card-title { font-family: 'Cinzel'; font-size: 1.4rem; color: var(--gold); margin-bottom: 10px; }
+        .card-text { font-size: 1rem; line-height: 1.6; color: #ddd; }
+        .highlight { color: #81ecec; font-weight: bold; text-shadow: 0 0 5px #81ecec; }
+
+        /* FOOTER ADMIN */
+        footer { text-align: center; padding: 50px; color: #666; font-family: 'Cinzel'; font-size: 0.8rem; position: relative; z-index: 20; }
+
+        /* ADMIN PANEL */
         #admin-panel {
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 20000; padding: 20px; overflow-y: auto;
+            background: #000; z-index: 10000; padding: 30px;
         }
-        .admin-input { width: 100%; padding: 15px; margin-bottom: 15px; background: #111; border: 1px solid #333; color: white; border-radius: 5px; }
-        .admin-btn { width: 100%; padding: 15px; background: var(--gold); font-weight: bold; cursor: pointer; border-radius: 5px; }
+        .admin-box { margin-top: 100px; border: 1px solid var(--gold); padding: 20px; border-radius: 10px; }
+        .inp { width: 100%; padding: 15px; margin-bottom: 15px; background: #222; border: 1px solid #444; color: white; }
+        .btn { width: 100%; padding: 15px; background: var(--gold); font-weight: bold; border: none; cursor: pointer; }
 
-        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
-        @keyframes bloom { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-
-        footer { text-align: center; padding: 40px; color: #444; font-family: 'Cinzel Decorative'; cursor: pointer; }
+        @keyframes pulse { 0%, 100% {opacity: 0.6;} 50% {opacity: 1;} }
 
         /* Mobile Adjustments */
-        @media (max-width: 600px) {
-            .title-cinematic { font-size: 2.2rem; }
-            .event-card { padding: 20px; }
+        @media (max-width: 768px) {
+            .cinematic-title { font-size: 2.5rem; }
+            .content-card { width: 85%; position: relative; left: auto; right: auto; margin: 20px auto; text-align: center; border: 1px solid var(--gold); }
+            .flower-marker { display: none; } /* Hide complex vine markers on small screens, keep content flow */
+            .vine-svg-container { display: none; }
+            .moon-layer { width: 100px; height: 100px; top: 2%; right: 5%; }
         }
     </style>
 </head>
 <body>
 
-    <audio id="bgm" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_10842a2754.mp3?filename=dark-mystery-trailer-115629.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="open-sfx">
-        <source src="https://cdn.pixabay.com/download/audio/2022/03/24/audio_3d15442656.mp3?filename=magic-spell-6005.mp3" type="audio/mpeg">
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/11/22/audio_febc508520.mp3?filename=cinematic-documentary-125633.mp3" type="audio/mpeg">
     </audio>
 
-    <div class="moon"></div>
+    <div class="moon-layer"></div>
     <canvas id="snow-canvas"></canvas>
     <canvas id="fire-canvas"></canvas>
 
-    <div id="invitation-cover">
-        <div class="envelope" onclick="openEnvelope()">
-            <div class="envelope-top"></div>
-            <div class="seal">VIP</div>
-            <div class="btn-open-text">TAP TO OPEN</div>
-        </div>
+    <div id="gate-screen">
+        <div class="gate-logo">OOTLANKA<br>2026</div>
+        <p style="color:#aaa; font-family:'Montserrat'; letter-spacing:2px; margin-bottom:20px;">TURN UP VOLUME & ENTER</p>
+        <button class="lang-btn" onclick="startCinema('en')">English</button>
+        <button class="lang-btn" onclick="startCinema('te')">తెలుగు</button>
     </div>
 
-    <div id="language-gate">
-        <h1 style="color:white; font-family:'Cinzel Decorative'; margin-bottom:30px;">Choose Your Journey</h1>
-        <button class="lang-btn" onclick="startExperience('en')">English Experience</button>
-        <button class="lang-btn" onclick="startExperience('te')">తెలుగు అనుభవం</button>
-    </div>
-
-    <div id="main-app">
-        <div class="vine-line"></div>
-        <div class="container">
+    <div id="main-scroll">
+        <div class="container" id="scroll-container">
             
+            <div class="vine-svg-container">
+                <svg width="100" height="2500" viewBox="0 0 100 2500" fill="none">
+                    <path id="vine-path" d="M50 0 L50 2500" stroke="#FFD700" stroke-width="2" stroke-dasharray="2500" stroke-dashoffset="2500"/>
+                </svg>
+            </div>
+
             <section class="hero">
-                <div class="vip-card" id="vip-area">
-                    <img id="vip-img" src="" alt="Guest Image">
+                <div class="vip-photo-frame" id="vip-frame">
+                    <div class="vip-glow"></div>
+                    <img id="vip-img" class="vip-img" src="" alt="Guest">
                 </div>
                 
-                <p id="wel-txt" style="color:var(--gold); font-family:'Great Vibes'; font-size:2rem; margin-bottom:10px;"></p>
-                <h1 class="title-cinematic">THE OOTLANKA<br>LEGEND 2026</h1>
-                <p style="letter-spacing:4px; font-size:0.9rem; opacity:0.7;">DECEMBER 31 // MUNIRATHNA FARM</p>
+                <p id="welcome-txt" style="color:var(--gold); font-family:'Great Vibes'; font-size:2rem; margin-bottom:10px;"></p>
+                <h1 class="cinematic-title">MIDNIGHT<br>FOREST SAGA</h1>
+                <p style="letter-spacing:2px; opacity:0.8; margin-top:10px;">Dec 31 • Ootlanka Forest • Munirathna Farm</p>
                 
-                <div style="margin-top:50px; animation: pulse 2s infinite; color:var(--gold);">
-                    SCROLL TO EXPLORE THE SAGA ↓
-                </div>
+                <div class="scroll-hint">SCROLL TO BEGIN JOURNEY</div>
             </section>
 
-            <div class="event-card">
-                <div class="flower">🌸</div>
-                <div class="card-header" id="h-journey">THE PILGRIMAGE</div>
-                <div class="card-body">
-                    <p id="p-bike">Bikes park at Venkojigaripalle Village.</p>
-                    <p id="p-tractor" class="highlight" style="margin-top:10px;">THE TRACTOR CONVOY: 20 Members. ONE Tractor. Village to Forest. Maximum Chaos & Fun!</p>
+            <div class="timeline-section">
+                <svg class="flower-marker" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="40" fill="#FFD700" opacity="0.8"/><circle cx="50" cy="50" r="20" fill="#FFF"/></svg>
+                
+                <div class="content-card left-card">
+                    <div class="card-icon">🚜</div>
+                    <h3 class="card-title" id="t-journey">THE GRAND JOURNEY</h3>
+                    <div class="card-text">
+                        <p id="c-bike">🏍️ Park bikes at Venkojigaripalle.</p>
+                        <p id="c-tractor" class="highlight" style="margin-top:10px;">THE TRACTOR CONVOY: All 20 members in ONE vehicle. Village to Forest. The cinematic ride begins here!</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="event-card">
-                <div class="flower">🌸</div>
-                <div class="card-header" id="h-feast">FOREST FEAST</div>
-                <div class="card-body">
-                    <p id="p-cook1">7:30 PM: Woodfire Cooking starts (Chapati & Chicken/Veg Curry).</p>
-                    <p id="p-dinner" style="margin-top:10px;">9:45 PM: The Grand Forest Dinner.</p>
+            <div class="timeline-section">
+                <svg class="flower-marker" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="40" fill="#FF4500" opacity="0.8"/><circle cx="50" cy="50" r="20" fill="#FFF"/></svg>
+                
+                <div class="content-card right-card">
+                    <div class="card-icon">🔥</div>
+                    <h3 class="card-title" id="t-feast">FOREST FEAST</h3>
+                    <div class="card-text">
+                        <p id="c-cook1"><b>7:30 PM:</b> Wood fire cooking (Chapati & Chicken/Veg).</p>
+                        <p id="c-dinner" style="margin-top:10px;"><b>9:45 PM:</b> A Grand Dinner by the bonfire under the moonlight.</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="event-card">
-                <div class="flower">🌸</div>
-                <div class="card-header" id="h-party">THE CELEBRATION</div>
-                <div class="card-body" id="p-mic">
-                    10:30 PM: Generator & DJ Lights ON.<br>
-                    <span class="highlight">OPEN MIC:</span> Sharing our 2025 Heart-stories (Sad, Happy, Bad) with Music and Dance!
+            <div class="timeline-section">
+                <svg class="flower-marker" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="40" fill="#E0F7FA" opacity="0.8"/><circle cx="50" cy="50" r="20" fill="#FFF"/></svg>
+                
+                <div class="content-card left-card">
+                    <div class="card-icon">🎤</div>
+                    <h3 class="card-title" id="t-party">THE SPECTACLE</h3>
+                    <div class="card-text">
+                        <p id="c-party">
+                            <b>10:30 PM:</b> DJ Lights & Generator ON.<br>
+                            <span class="highlight">OPEN MIC:</span> Songs, Dance, and sharing our 2025 Heart Stories (Sad & Happy).
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            <div class="event-card">
-                <div class="flower">🌸</div>
-                <div class="card-header" id="h-mid">THE AWAKENING (2026)</div>
-                <div class="card-body">
-                    <p id="p-cake" style="font-size:1.4rem; color:var(--gold);">12:00 AM: CAKE CUTTING CELEBRATION!</p>
-                    <p id="p-cook2" style="margin-top:10px; border-top:1px dashed rgba(255,215,0,0.3); padding-top:10px;">
-                        <b>ROUND 2:</b> 2 Big Country Chickens (12kg). Cooking Biryani & Pakoda until 6:00 AM Sunrise.
-                    </p>
+            <div class="timeline-section">
+                <svg class="flower-marker" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="40" fill="#FFD700" opacity="0.8"/><circle cx="50" cy="50" r="20" fill="#FFF"/></svg>
+                
+                <div class="content-card right-card">
+                    <div class="card-icon">🎆</div>
+                    <h3 class="card-title" id="t-mid">2026 AWAKENING</h3>
+                    <div class="card-text">
+                        <p id="c-cake" style="font-size:1.2rem; color:var(--gold);">12:00 AM: CAKE CUTTING!</p>
+                        <p id="c-cook2" style="margin-top:10px; border-top:1px solid rgba(255,215,0,0.3); padding-top:10px;">
+                            <b>ROUND 2:</b> 2 Big Country Chickens (12kg). Biryani & Pakoda cooking continues until Sunrise (6 AM).
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            <div class="event-card" style="border-top: 4px solid red;">
-                <div class="card-header" style="color:red;" id="h-rules">THE CODE OF CONDUCT</div>
-                <div class="card-body">
-                    <p id="p-strict">Zero Tolerance: Over-drinking, Fighting, Bullying. Pure Brotherhood Only.</p>
-                    <p id="p-fee" style="margin-top:10px; color:var(--gold);">Entry: Min Rs. 300 (Maximum is your wish).</p>
+            <div class="timeline-section">
+                 <div class="content-card" style="width:80%; position:relative; transform:none; left:auto; right:auto; border-color:red; text-align:center;">
+                    <div class="card-icon">⚠️</div>
+                    <h3 class="card-title" style="color:red" id="t-rules">IMPORTANT DECREE</h3>
+                    <p class="card-text" id="c-strict">Strictly No Fighting, No Bullying, No Over Drinking.</p>
+                    <p class="card-text" id="c-fee" style="margin-top:5px; color:#aaa;">Entry: Min Rs. 300.</p>
                 </div>
             </div>
 
             <footer id="admin-trigger">
-                © 2026 OOTLANKA FRIENDS
+                © 2026 Ootlanka Friends
             </footer>
         </div>
     </div>
 
     <div id="admin-panel">
-        <h2 style="color:var(--gold); margin-bottom:20px;">Invitation Generator</h2>
-        <input type="text" id="a-name" class="admin-input" placeholder="Guest Name">
-        <input type="file" id="a-photo" class="admin-input" accept="image/*">
-        <div id="a-status" style="color:var(--gold); margin-bottom:10px;"></div>
-        <button class="admin-btn" onclick="generateLink()">Create Invitation Link</button>
-        
-        <div id="a-result" style="display:none; margin-top:20px;">
-            <p style="color:white;">Copy Link:</p>
-            <textarea id="final-url" class="admin-input" style="height:80px;"></textarea>
-            <button class="admin-btn" style="background:#444; color:white;" onclick="copyLink()">Copy to Clipboard</button>
+        <div class="admin-box">
+            <h2 style="color:var(--gold);">VIP ADMIN</h2>
+            <p style="color:#aaa;">Name:</p>
+            <input type="text" id="a-name" class="inp" placeholder="Name">
+            <p style="color:#aaa;">Photo:</p>
+            <input type="file" id="a-photo" class="inp" accept="image/*">
+            <div id="c-msg" style="color:#00ff9d;"></div>
+            <button class="btn" onclick="genLink()">GENERATE LINK</button>
+            <div id="res-box" style="display:none; margin-top:20px;">
+                <textarea id="f-link" class="inp" style="height:80px;"></textarea>
+                <button class="btn" style="background:#333; color:white;" onclick="copyL()">COPY</button>
+            </div>
+            <button onclick="document.getElementById('admin-panel').style.display='none'" style="margin-top:20px; background:none; border:none; color:#888; width:100%;">Close</button>
         </div>
-        <button onclick="document.getElementById('admin-panel').style.display='none'" style="margin-top:20px; color:#888; background:none; border:none; width:100%;">Close Admin</button>
     </div>
 
     <script>
-        // --- CONTENT DICTIONARY ---
-        const content = {
+        // --- 1. CONTENT ---
+        const txt = {
             en: {
-                wel: "Welcome to the Saga, ",
-                h_journey: "THE PILGRIMAGE",
-                p_bike: "Bikes park at Venkojigaripalle Village (Friends' homes).",
-                p_tractor: "THE TRACTOR CONVOY: All 20 members in ONE vehicle. Village to Ootlanka. Maximum Thrill!",
-                h_feast: "FOREST FEAST",
-                p_cook1: "7:30 PM: Woodfire Cooking starts (Chapati & Chicken/Veg Curry).",
-                p_dinner: "9:45 PM: The Grand Forest Dinner.",
-                h_party: "THE CELEBRATION",
-                p_mic: "10:30 PM: Generator & DJ Lights ON.<br><span class='highlight'>OPEN MIC:</span> Sharing our 2025 Heart-stories (Sad, Happy, Bad) with Music and Dance!",
-                h_mid: "THE AWAKENING (2026)",
-                p_cake: "12:00 AM: CAKE CUTTING CELEBRATION!",
-                p_cook2: "<b>ROUND 2:</b> 2 Big Country Chickens (12kg). Cooking Biryani & Pakoda until 6:00 AM Sunrise.",
-                h_rules: "THE CODE OF CONDUCT",
-                p_strict: "Zero Tolerance: No Fighting, No Bullying, No Over Drinking. Let's make it beautiful.",
-                p_fee: "Entry: Min Rs. 300 (Max is your choice)."
+                wel: "Welcome,",
+                jour: "THE GRAND JOURNEY",
+                bike: "🏍️ Park bikes at Venkojigaripalle.",
+                trac: "THE TRACTOR CONVOY: All 20 members in ONE vehicle. Village to Forest. The cinematic ride begins here!",
+                feast: "FOREST FEAST",
+                cook1: "<b>7:30 PM:</b> Wood fire cooking (Chapati & Chicken/Veg).",
+                din: "<b>9:45 PM:</b> A Grand Dinner by the bonfire under the moonlight.",
+                party: "THE SPECTACLE",
+                p_desc: "<b>10:30 PM:</b> DJ Lights & Generator ON.<br><span class='highlight'>OPEN MIC:</span> Songs, Dance, and sharing our 2025 Heart Stories (Sad & Happy).",
+                mid: "2026 AWAKENING",
+                cake: "12:00 AM: CAKE CUTTING!",
+                cook2: "<b>ROUND 2:</b> 2 Big Country Chickens (12kg). Biryani & Pakoda cooking continues until Sunrise (6 AM).",
+                rules: "IMPORTANT DECREE",
+                strict: "Strictly No Fighting, No Bullying, No Over Drinking.",
+                fee: "Entry: Min Rs. 300."
             },
             te: {
-                wel: "స్వాగతం, ",
-                h_journey: "ప్రయాణం - ప్లాన్",
-                p_bike: "మన బైక్‌లని వెంకోజిగారిపల్లెలో స్నేహితుల ఇళ్లలో పెట్టాలి.",
-                p_tractor: "ట్రాక్టర్ యాత్ర: అందరం ఒకే ట్రాక్టర్లో.. అడవికి పయనం! మజా మామూలుగా ఉండదు!",
-                h_feast: "వన విందు",
-                p_cook1: "7:30 PM: వంట మొదలు (కట్టెల పొయ్యి మీద చపాతీ & నాటు కోడి).",
-                p_dinner: "9:45 PM: అందరం కలిసి వన భోజనం.",
-                h_party: "సంబరాలు",
-                p_mic: "10:30 PM: DJ లైట్లు & జనరేటర్ ఆన్.<br><span class='highlight'>ఓపెన్ మైక్:</span> డ్యాన్స్, పాటలు.. 2025 మన కష్ట సుఖాలు మైక్ లో పంచుకుందాం.",
-                h_mid: "నూతన సంవత్సరం 2026",
-                p_cake: "12:00 AM: కొత్త సంవత్సరానికి కేక్ కటింగ్!",
-                p_cook2: "<b>రెండవ రౌండ్:</b> 2 పెద్ద నాటు కోళ్లు (12kg). తెల్లవార్లు బిర్యానీ & పకోడా వండుకుని తినడమే!",
-                h_rules: "నియమాలు",
-                p_strict: "గొడవలు, హేళనలు, అతిగా తాగడం పూర్తిగా నిషేధం. గౌరవంగా పార్టీ చేసుకుందాం.",
-                p_fee: "చందా: కనీసం రూ. 300 (మీ ఇష్టం)."
+                wel: "స్వాగతం,",
+                jour: "రాజోచిత ప్రయాణం",
+                bike: "🏍️ బైక్ పార్కింగ్: వెంకోజిగారిపల్లె.",
+                trac: "🚜 ట్రాక్టర్ యాత్ర: మనమందరం ఒకే ట్రాక్టర్లో.. ఊరి నుండి అడవికి! సినిమా రేంజ్ లో ఉంటుంది!",
+                feast: "వన విందు",
+                cook1: "<b>7:30 PM:</b> వంట మొదలు (చపాతీ & నాటు కోడి).",
+                din: "<b>9:45 PM:</b> వెన్నెల వెలుగులో, మంట ముందు భోజనం.",
+                party: "సంబరాలు",
+                p_desc: "<b>10:30 PM:</b> DJ లైట్లు & జనరేటర్.<br><span class='highlight'>ఓపెన్ మైక్:</span> డ్యాన్స్, పాటలు.. 2025 కష్ట సుఖాలు పంచుకుందాం.",
+                mid: "నూతన సంవత్సరం 2026",
+                cake: "12:00 AM: కేక్ కటింగ్!",
+                cook2: "<b>రెండవ రౌండ్:</b> 2 పెద్ద నాటు కోళ్లు (12kg). తెల్లవార్లు బిర్యానీ & పకోడా వండుకుని తినడమే!",
+                rules: "ఆజ్ఞలు",
+                strict: "గొడవలు, అతిగా తాగడం, హేళన చేయడం పూర్తిగా నిషేధం.",
+                fee: "ఎంట్రీ: రూ. 300 (కనీసం)."
             }
         };
 
-        let compressedImg = "";
+        let compressed = "";
 
-        // --- CORE LOGIC ---
-        function openEnvelope() {
-            document.getElementById('open-sfx').play();
-            const env = document.querySelector('.envelope');
-            env.classList.add('open');
+        // --- 2. STARTUP LOGIC ---
+        function startCinema(lang) {
+            // Audio
+            const music = document.getElementById('bg-music');
+            music.volume = 0.6;
+            music.play();
+
+            // Set Data
+            const t = txt[lang];
+            const p = new URLSearchParams(window.location.search);
             
-            setTimeout(() => {
-                gsap.to('#invitation-cover', { opacity: 0, duration: 1, onComplete: () => {
-                    document.getElementById('invitation-cover').style.display = 'none';
-                    document.getElementById('language-gate').style.display = 'flex';
-                }});
-            }, 800);
-        }
-
-        function startExperience(lang) {
-            // Start BGM
-            const bgm = document.getElementById('bgm');
-            bgm.volume = 0.5;
-            bgm.play();
-
-            // Setup Data
-            const t = content[lang];
-            const urlP = new URLSearchParams(window.location.search);
-            const guest = urlP.get('guest');
-            const pic = urlP.get('pic');
-
-            if(guest) document.getElementById('wel-txt').innerText = t.wel + decodeURIComponent(guest);
-            if(pic) {
-                document.getElementById('vip-area').style.display = 'block';
-                document.getElementById('vip-img').src = decodeURIComponent(pic);
+            if(p.get('guest')) document.getElementById('welcome-txt').innerText = t.wel + " " + decodeURIComponent(p.get('guest'));
+            if(p.get('pic')) {
+                document.getElementById('vip-frame').style.display = 'block';
+                document.getElementById('vip-img').src = decodeURIComponent(p.get('pic'));
             }
 
-            // Fill Content
-            document.getElementById('h-journey').innerText = t.h_journey;
-            document.getElementById('p-bike').innerText = t.p_bike;
-            document.getElementById('p-tractor').innerHTML = t.p_tractor;
-            document.getElementById('h_feast').innerText = t.h_feast;
-            document.getElementById('p-cook1').innerHTML = t.p_cook1;
-            document.getElementById('p-dinner').innerHTML = t.p_dinner;
-            document.getElementById('h-party').innerText = t.h_party;
-            document.getElementById('p-mic').innerHTML = t.p_mic;
-            document.getElementById('h-mid').innerText = t.h_mid;
-            document.getElementById('p-cake').innerHTML = t.p_cake;
-            document.getElementById('p-cook2').innerHTML = t.p_cook2;
-            document.getElementById('h-rules').innerText = t.h_rules;
-            document.getElementById('p-strict').innerText = t.p_strict;
-            document.getElementById('p-fee').innerText = t.p_fee;
+            document.getElementById('t-journey').innerText = t.jour;
+            document.getElementById('c-bike').innerText = t.bike;
+            document.getElementById('c-tractor').innerHTML = t.trac;
+            document.getElementById('t-feast').innerText = t.feast;
+            document.getElementById('c-cook1').innerHTML = t.cook1;
+            document.getElementById('c-dinner').innerHTML = t.din;
+            document.getElementById('t-party').innerText = t.party;
+            document.getElementById('c-party').innerHTML = t.p_desc;
+            document.getElementById('t-mid').innerText = t.mid;
+            document.getElementById('c-cake').innerHTML = t.cake;
+            document.getElementById('c-cook2').innerHTML = t.cook2;
+            document.getElementById('t-rules').innerText = t.rules;
+            document.getElementById('c-strict').innerText = t.strict;
+            document.getElementById('c-fee').innerText = t.fee;
 
             // Transition
-            gsap.to('#language-gate', { opacity: 0, duration: 0.8, onComplete: () => {
-                document.getElementById('language-gate').style.display = 'none';
-                document.body.style.overflow = 'auto';
-                const app = document.getElementById('main-app');
-                app.style.display = 'block';
-                gsap.to(app, { opacity: 1, duration: 1.5 });
+            gsap.to('.gate-logo', { scale: 5, opacity: 0, duration: 1 });
+            gsap.to('#gate-screen', { opacity: 0, duration: 1.5, delay: 0.5, onComplete: () => {
+                document.getElementById('gate-screen').style.display = 'none';
+                document.body.style.overflowY = 'auto';
+                document.getElementById('main-scroll').style.display = 'block';
                 
-                triggerScrollAnimations();
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                initMainAnimations();
             }});
         }
 
-        function triggerScrollAnimations() {
-            gsap.utils.toArray('.event-card').forEach(card => {
-                ScrollTrigger.create({
-                    trigger: card,
-                    start: "top 85%",
-                    onEnter: () => {
-                        card.classList.add('active');
-                        gsap.fromTo(card.querySelector('.flower'), {scale:0}, {scale:1, opacity:1, duration:0.5});
+        window.onload = () => {
+            gsap.to('.gate-logo', { opacity: 1, scale: 1, duration: 1.5, ease: "power2.out" });
+            initFire();
+            initSnow();
+        };
+
+        function initMainAnimations() {
+            gsap.to('#main-scroll', { opacity: 1, duration: 1 });
+            
+            // Hero Intro
+            gsap.from('.hero', { opacity: 0, y: 50, duration: 1.5, ease: "power2.out" });
+
+            // The Growing Vine (Desktop Only)
+            gsap.to("#vine-path", {
+                strokeDashoffset: 0,
+                scrollTrigger: {
+                    trigger: "#scroll-container",
+                    start: "top center",
+                    end: "bottom bottom",
+                    scrub: 1
+                }
+            });
+
+            // Flowers Blooming & Cards Appearing
+            gsap.utils.toArray('.timeline-section').forEach(section => {
+                const flower = section.querySelector('.flower-marker');
+                const card = section.querySelector('.content-card');
+                
+                const tl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: section,
+                        start: "top 70%",
                     }
                 });
+
+                if(flower) tl.to(flower, { scale: 1, rotation: 360, duration: 0.8, ease: "back.out(1.7)" });
+                tl.to(card, { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" }, "-=0.4");
             });
+
+            triggerConfetti();
         }
 
-        // --- BACKGROUND FX ---
-        function initBackground() {
-            // Snow
-            const sc = document.getElementById('snow-canvas');
-            const sctx = sc.getContext('2d');
-            sc.width = window.innerWidth; sc.height = window.innerHeight;
-            const flakes = [];
-            for(let i=0; i<100; i++) flakes.push({x:Math.random()*sc.width, y:Math.random()*sc.height, r:Math.random()*2, d:Math.random()*1});
-
-            // Fire
-            const fc = document.getElementById('fire-canvas');
-            const fctx = fc.getContext('2d');
-            fc.width = window.innerWidth; fc.height = window.innerHeight;
-            const particles = [];
+        // --- 3. CANVAS EFFECTS ---
+        
+        // Fire Canvas
+        function initFire() {
+            const c = document.getElementById('fire-canvas');
+            const ctx = c.getContext('2d');
+            c.width = window.innerWidth; c.height = window.innerHeight * 0.4;
             
-            function animate() {
-                // Snow draw
-                sctx.clearRect(0,0,sc.width, sc.height);
-                sctx.fillStyle = "white";
-                sctx.beginPath();
-                flakes.forEach(f => {
-                    f.y += f.d; if(f.y > sc.height) f.y = 0;
-                    sctx.moveTo(f.x, f.y); sctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
-                });
-                sctx.fill();
+            const particles = [];
+            for(let i=0; i<50; i++) particles.push({
+                x: Math.random()*c.width, y: c.height, s: Math.random()*20+10,
+                speed: Math.random()*2+1, life: Math.random()
+            });
 
-                // Fire draw (Simplistic)
-                fctx.clearRect(0,0,fc.width, fc.height);
-                fctx.globalCompositeOperation = "lighter";
-                if(particles.length < 50) particles.push({x:fc.width/2 + (Math.random()*60-30), y:fc.height-20, s:Math.random()*20, v:Math.random()*2});
-                particles.forEach((p, i) => {
-                    p.y -= p.v; p.s *= 0.96;
-                    fctx.beginPath(); fctx.arc(p.x, p.y, p.s, 0, Math.PI*2);
-                    fctx.fillStyle = `rgba(255, ${Math.random()*100}, 0, 0.5)`;
-                    fctx.fill();
-                    if(p.s < 1) particles.splice(i, 1);
+            function anim() {
+                ctx.clearRect(0,0,c.width,c.height);
+                ctx.globalCompositeOperation = "lighter";
+                particles.forEach(p => {
+                    p.y -= p.speed; p.s *= 0.98; p.life -= 0.01;
+                    if(p.life <= 0) { p.y = c.height; p.s = Math.random()*20+10; p.life = Math.random(); p.x = Math.random()*c.width; }
+                    
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.s, 0, Math.PI*2);
+                    const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.s);
+                    g.addColorStop(0, "rgba(255,69,0,0.8)");
+                    g.addColorStop(1, "rgba(255,140,0,0)");
+                    ctx.fillStyle = g; ctx.fill();
                 });
-
-                requestAnimationFrame(animate);
+                requestAnimationFrame(anim);
             }
-            animate();
+            anim();
         }
-        initBackground();
 
-        // --- ADMIN FUNCTIONS ---
-        let adminClicks = 0;
-        document.getElementById('admin-trigger').addEventListener('click', () => {
-            adminClicks++;
-            if(adminClicks === 3) {
-                document.getElementById('admin-panel').style.display = 'block';
-                adminClicks = 0;
+        // Snow Canvas
+        function initSnow() {
+            const c = document.getElementById('snow-canvas');
+            const ctx = c.getContext('2d');
+            c.width = window.innerWidth; c.height = window.innerHeight;
+            const flakes = [];
+            for(let i=0; i<100; i++) flakes.push({x:Math.random()*c.width, y:Math.random()*c.height, r:Math.random()*2, d:Math.random()*1});
+
+            function draw() {
+                ctx.clearRect(0,0,c.width,c.height);
+                ctx.fillStyle = "rgba(255,255,255,0.6)";
+                flakes.forEach(f => {
+                    f.y += f.d; if(f.y>c.height) f.y=0;
+                    ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); ctx.fill();
+                });
+                requestAnimationFrame(draw);
             }
-            setTimeout(() => adminClicks = 0, 2000);
+            draw();
+        }
+
+        function triggerConfetti() {
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#FFD700', '#FFFFFF'] });
+        }
+
+        // --- 4. ADMIN ---
+        let clicks = 0;
+        document.getElementById('admin-trigger').addEventListener('click', () => {
+            clicks++; if(clicks===3){document.getElementById('admin-panel').style.display='block'; clicks=0;}
+            setTimeout(()=>clicks=0, 2000);
         });
 
         document.getElementById('a-photo').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            document.getElementById('a-status').innerText = "Processing Photo...";
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = function(event) {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX = 200;
-                    let w = img.width, h = img.height;
-                    if(w > h) { if(w > MAX) { h *= MAX/w; w = MAX; } }
-                    else { if(h > MAX) { w *= MAX/h; h = MAX; } }
-                    canvas.width = w; canvas.height = h;
-                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    compressedImg = canvas.toDataURL('image/jpeg', 0.6);
-                    document.getElementById('a-status').innerText = "Photo Ready!";
+            const f = e.target.files[0]; if(!f) return;
+            document.getElementById('c-msg').innerText = "Compressing...";
+            const r = new FileReader(); r.readAsDataURL(f);
+            r.onload = function(ev) {
+                const i = new Image(); i.src = ev.target.result;
+                i.onload = function() {
+                    const c = document.createElement('canvas');
+                    const m = 200; let w=i.width, h=i.height;
+                    if(w>h){if(w>m){h*=m/w;w=m}}else{if(h>m){w*=m/h;h=m}}
+                    c.width=w; c.height=h; c.getContext('2d').drawImage(i,0,0,w,h);
+                    compressed = c.toDataURL('image/jpeg', 0.6);
+                    document.getElementById('c-msg').innerText = "Ready!";
                 }
             }
         });
 
-        function generateLink() {
-            const name = document.getElementById('a-name').value;
-            if(!name) return alert("Enter Guest Name");
-            let url = window.location.href.split('?')[0] + `?guest=${encodeURIComponent(name)}`;
-            if(compressedImg) url += `&pic=${encodeURIComponent(compressedImg)}`;
-            document.getElementById('a-result').style.display = 'block';
-            document.getElementById('final-url').value = url;
+        function genLink() {
+            const n = document.getElementById('a-name').value;
+            let u = window.location.href.split('?')[0] + `?guest=${encodeURIComponent(n)}`;
+            if(compressed) u += `&pic=${encodeURIComponent(compressed)}`;
+            document.getElementById('res-box').style.display='block';
+            document.getElementById('f-link').value = u;
         }
 
-        function copyLink() {
-            const copyText = document.getElementById('final-url');
-            copyText.select();
-            document.execCommand("copy");
-            alert("Invitation Link Copied!");
+        function copyL() {
+            document.getElementById('f-link').select(); document.execCommand('copy'); alert("Copied!");
         }
+
     </script>
 </body>
 </html>
