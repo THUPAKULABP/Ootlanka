@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NYE 2026: Ootlanka Forest Party</title>
+    <title>The Ootlanka Legend 2026</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Cinzel:wght@700&family=Ramabhadra&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Ramabhadra&family=Orbitron:wght@500;900&family=Great+Vibes&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -15,482 +15,450 @@
 
     <style>
         :root {
-            --neon-blue: #00f3ff;
-            --neon-purple: #bc13fe;
-            --neon-gold: #ffd700;
-            --neon-green: #39ff14;
-            --bg-dark: #050505;
-            --card-bg: rgba(20, 20, 25, 0.85);
+            --gold: #FFD700;
+            --deep-forest: #020a05;
+            --fire-red: #ff4d00;
+            --moon-glow: #e0f7fa;
+            --glass: rgba(0, 20, 10, 0.8);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         
         body { 
-            background-color: var(--bg-dark); 
+            background-color: var(--deep-forest); 
             color: white; 
-            font-family: 'Poppins', 'Ramabhadra', sans-serif; 
-            overflow-x: hidden;
-            scroll-behavior: smooth;
+            font-family: 'Montserrat', sans-serif; 
+            overflow: hidden; /* Lock scroll for intro */
         }
 
-        /* --- BACKGROUND LAYERS --- */
-        #canvas-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; }
-        .overlay-gradient { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; 
-            background: radial-gradient(circle at center, transparent 0%, #000 90%);
-            pointer-events: none;
+        /* --- SOUND EFFECTS --- */
+        #bgm, #open-sfx { display: none; }
+
+        /* --- BACKGROUND ELEMENTS --- */
+        #snow-canvas, #fire-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .moon { 
+            position: fixed; top: 5%; right: 5%; width: 120px; height: 120px; 
+            background: radial-gradient(circle, #fff, #888); 
+            border-radius: 50%; box-shadow: 0 0 50px var(--moon-glow); 
+            opacity: 0.6; z-index: -2; 
         }
 
-        /* --- MUSIC CONTROL --- */
-        #music-control {
-            position: fixed; top: 20px; right: 20px; z-index: 5000;
-            background: rgba(0,0,0,0.7); border: 1px solid var(--neon-green);
-            padding: 10px; border-radius: 50%; width: 40px; height: 40px;
-            display: none; justify-content: center; align-items: center; cursor: pointer;
+        /* --- SCENE 1: THE INTERACTIVE ENVELOPE --- */
+        #invitation-cover {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #111, #000);
+            z-index: 10000; display: flex; justify-content: center; align-items: center;
         }
-        .music-bars { display: flex; gap: 3px; height: 15px; align-items: flex-end; }
-        .bar { width: 3px; background: var(--neon-green); animation: equalizer 0.5s infinite alternate; }
-        .bar:nth-child(2) { animation-delay: 0.1s; }
-        .bar:nth-child(3) { animation-delay: 0.2s; }
-        .paused .bar { animation: none; height: 2px; }
-        @keyframes equalizer { 0% { height: 2px; } 100% { height: 15px; } }
 
-        /* --- INTRO / LANGUAGE SELECTION --- */
+        .envelope {
+            width: 300px; height: 200px; background: #1a1a1a;
+            border: 2px solid var(--gold); position: relative;
+            transform-style: preserve-3d; cursor: pointer;
+            box-shadow: 0 20px 50px rgba(0,0,0,1);
+            border-radius: 5px;
+        }
+
+        .envelope-top {
+            position: absolute; top: 0; left: 0; width: 0; height: 0;
+            border-left: 150px solid transparent; border-right: 150px solid transparent;
+            border-top: 100px solid #222; z-index: 2; transform-origin: top;
+            transition: transform 0.6s;
+        }
+
+        .seal {
+            position: absolute; top: 70px; left: 120px; width: 60px; height: 60px;
+            background: radial-gradient(circle, #ff0000, #600);
+            border-radius: 50%; z-index: 3; border: 2px solid var(--gold);
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Great Vibes'; color: var(--gold); font-size: 1.5rem;
+        }
+
+        .envelope.open .envelope-top { transform: rotateX(180deg); }
+
+        .btn-open-text {
+            position: absolute; bottom: -60px; width: 100%; text-align: center;
+            font-family: 'Cinzel Decorative'; color: var(--gold);
+            letter-spacing: 3px; animation: pulse 2s infinite;
+        }
+
+        /* --- SCENE 2: LANGUAGE GATE --- */
         #language-gate {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 9999; display: flex;
+            background: rgba(0,0,0,0.9); z-index: 9000; display: none;
             flex-direction: column; justify-content: center; align-items: center;
-            backdrop-filter: blur(10px);
-        }
-        
-        .gate-title {
-            font-family: 'Audiowide'; font-size: 2rem; color: white; margin-bottom: 40px;
-            text-shadow: 0 0 20px var(--neon-blue); text-align: center; padding: 0 20px;
+            backdrop-filter: blur(20px);
         }
 
         .lang-btn {
-            position: relative; padding: 20px 50px; margin: 15px; font-size: 1.2rem;
-            background: transparent; color: var(--neon-green); border: 2px solid var(--neon-green);
-            font-family: 'Audiowide', sans-serif; text-transform: uppercase; cursor: pointer;
-            overflow: hidden; transition: 0.3s; border-radius: 50px; width: 80%; max-width: 300px;
+            background: transparent; border: 2px solid var(--gold); color: var(--gold);
+            padding: 20px 50px; margin: 15px; font-size: 1.5rem;
+            font-family: 'Cinzel Decorative', 'Ramabhadra'; border-radius: 10px;
+            cursor: pointer; transition: 0.4s; width: 280px; text-transform: uppercase;
         }
-        .lang-btn:hover { background: var(--neon-green); color: black; box-shadow: 0 0 30px var(--neon-green); }
+        .lang-btn:hover { background: var(--gold); color: black; box-shadow: 0 0 40px var(--gold); }
 
-        /* --- MAIN CONTENT --- */
-        .container { 
-            max-width: 800px; margin: 0 auto; opacity: 0; padding-bottom: 100px; 
-            position: relative; z-index: 1;
+        /* --- MAIN APP CONTENT --- */
+        #main-app { 
+            position: relative; z-index: 10; display: none; opacity: 0; 
+            padding-bottom: 100px;
         }
 
-        /* --- HERO SECTION --- */
-        .hero { 
+        .hero {
             height: 100vh; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; text-align: center; 
-            position: relative; padding: 20px;
+            justify-content: center; align-items: center; text-align: center;
+            padding: 20px;
         }
 
-        /* Hologram Photo Style */
-        .holo-container {
-            width: 160px; height: 160px; margin-bottom: 20px; position: relative;
-            display: none; /* Active only if photo exists */
+        /* VIP Guest Photo */
+        .vip-card {
+            width: 180px; height: 180px; border-radius: 50%; 
+            border: 4px solid var(--gold); margin-bottom: 20px;
+            position: relative; display: none;
+            box-shadow: 0 0 30px var(--gold);
         }
-        .holo-ring {
-            position: absolute; width: 100%; height: 100%; border-radius: 50%;
-            border: 2px dashed var(--neon-blue); animation: spin 10s linear infinite;
-        }
-        .holo-img {
-            width: 140px; height: 140px; border-radius: 50%; position: absolute;
-            top: 10px; left: 10px; object-fit: cover; border: 3px solid var(--neon-blue);
-            box-shadow: 0 0 20px var(--neon-blue);
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        .title-glitch {
-            font-family: 'Audiowide'; font-size: 3rem; color: white;
-            text-shadow: 3px 3px 0px var(--neon-purple); margin-bottom: 10px;
-            line-height: 1.1;
-        }
+        .vip-card img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
         
-        .hero-subtitle { font-size: 1.1rem; color: #ccc; margin-bottom: 20px; }
-
-        /* SCROLL INDICATOR (Fixing the "Users don't scroll" issue) */
-        .scroll-hint {
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-            display: flex; flex-direction: column; align-items: center;
-            animation: bounce 2s infinite; cursor: pointer;
-        }
-        .scroll-text { font-size: 0.8rem; letter-spacing: 2px; color: var(--neon-gold); margin-bottom: 5px; }
-        .arrow-down { 
-            width: 0; height: 0; border-left: 10px solid transparent;
-            border-right: 10px solid transparent; border-top: 15px solid var(--neon-gold);
-        }
-        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateX(-50%) translateY(0);} 40% {transform: translateX(-50%) translateY(-10px);} 60% {transform: translateX(-50%) translateY(-5px);} }
-
-        /* --- CARDS DESIGN --- */
-        .section-card {
-            background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border-radius: 20px; padding: 25px; margin: 30px 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transform: translateY(50px); opacity: 0; /* For scroll animation */
-            position: relative; overflow: hidden;
+        .title-cinematic {
+            font-family: 'Cinzel Decorative'; font-size: 3.2rem;
+            background: linear-gradient(to bottom, #fff, var(--gold));
+            -webkit-background-clip: text; color: transparent;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            margin-bottom: 10px; line-height: 1.1;
         }
 
-        .section-card::before {
-            content:''; position: absolute; top:0; left:0; width: 4px; height: 100%;
-            background: var(--neon-green);
+        /* Scrolling Vines & Flowers */
+        .vine-line {
+            position: absolute; left: 50%; top: 100vh; bottom: 0; width: 2px;
+            background: var(--gold); transform: translateX(-50%);
+            z-index: -1; opacity: 0.3;
         }
-        .card-gold::before { background: var(--neon-gold); }
-        .card-purple::before { background: var(--neon-purple); }
-        .card-blue::before { background: var(--neon-blue); }
 
-        .card-title {
-            font-family: 'Audiowide'; font-size: 1.5rem; color: white; margin-bottom: 20px;
-            display: flex; align-items: center; gap: 10px; text-transform: uppercase;
+        .event-card {
+            background: var(--glass); border: 1px solid rgba(255,215,0,0.2);
+            padding: 30px; border-radius: 20px; margin: 50px 20px;
+            backdrop-filter: blur(10px); position: relative;
+            transform: translateY(100px); opacity: 0;
+            transition: all 0.8s;
         }
-        
-        .detail-row {
-            display: flex; gap: 15px; margin-bottom: 15px; align-items: flex-start;
-            border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;
-        }
-        .icon { font-size: 1.8rem; min-width: 40px; }
-        .desc { font-size: 1rem; line-height: 1.6; color: #ddd; }
-        .highlight { color: var(--neon-gold); font-weight: bold; }
 
-        /* --- COUNTDOWN --- */
-        .countdown { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
-        .cd-unit { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; min-width: 60px; text-align: center; border: 1px solid var(--neon-blue); }
-        .cd-num { font-family: 'Audiowide'; font-size: 1.5rem; color: var(--neon-blue); display: block; }
-        .cd-label { font-size: 0.7rem; color: #aaa; text-transform: uppercase; }
+        .event-card.active { transform: translateY(0); opacity: 1; }
+
+        /* Flower Bloom */
+        .flower {
+            position: absolute; left: -15px; top: -15px; font-size: 2rem;
+            color: var(--gold); animation: bloom 2s forwards; opacity: 0;
+        }
+
+        .card-header { font-family: 'Cinzel Decorative'; font-size: 1.6rem; color: var(--gold); margin-bottom: 15px; }
+        .card-body { font-size: 1.1rem; line-height: 1.8; color: #eee; }
+        .highlight { color: #00ffcc; font-weight: bold; }
 
         /* --- ADMIN PANEL --- */
-        #admin-modal {
+        #admin-panel {
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%;
-            background: #111; z-index: 10000; padding: 20px; overflow-y: auto;
+            background: #000; z-index: 20000; padding: 20px; overflow-y: auto;
         }
-        .admin-box { background: #222; padding: 20px; border-radius: 15px; border: 1px solid var(--neon-green); margin-top: 50px; }
-        input[type="text"], textarea { width: 100%; padding: 15px; background: #000; color: white; border: 1px solid #444; margin-bottom: 10px; border-radius: 5px;}
-        .btn-action { width: 100%; padding: 15px; background: var(--neon-green); color: black; font-weight: bold; border: none; border-radius: 5px; font-size: 1rem; margin-top: 10px; cursor: pointer; }
+        .admin-input { width: 100%; padding: 15px; margin-bottom: 15px; background: #111; border: 1px solid #333; color: white; border-radius: 5px; }
+        .admin-btn { width: 100%; padding: 15px; background: var(--gold); font-weight: bold; cursor: pointer; border-radius: 5px; }
 
-        /* Footer */
-        footer { text-align: center; padding: 40px; color: #555; font-size: 0.9rem; margin-top: 50px; cursor: pointer; user-select: none; }
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+        @keyframes bloom { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        footer { text-align: center; padding: 40px; color: #444; font-family: 'Cinzel Decorative'; cursor: pointer; }
 
         /* Mobile Adjustments */
         @media (max-width: 600px) {
-            .title-glitch { font-size: 2.2rem; }
-            .hero-subtitle { font-size: 1rem; }
-            .section-card { padding: 20px; margin: 20px 15px; }
+            .title-cinematic { font-size: 2.2rem; }
+            .event-card { padding: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <audio id="bg-music" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2022/03/24/audio_3327d54d20.mp3?filename=cinematic-atmosphere-score-12-19256.mp3" type="audio/mpeg">
+    <audio id="bgm" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_10842a2754.mp3?filename=dark-mystery-trailer-115629.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="open-sfx">
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/24/audio_3d15442656.mp3?filename=magic-spell-6005.mp3" type="audio/mpeg">
     </audio>
 
-    <canvas id="canvas-bg"></canvas>
-    <div class="overlay-gradient"></div>
+    <div class="moon"></div>
+    <canvas id="snow-canvas"></canvas>
+    <canvas id="fire-canvas"></canvas>
 
-    <div id="music-control" onclick="toggleMusic()">
-        <div class="music-bars">
-            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    <div id="invitation-cover">
+        <div class="envelope" onclick="openEnvelope()">
+            <div class="envelope-top"></div>
+            <div class="seal">VIP</div>
+            <div class="btn-open-text">TAP TO OPEN</div>
         </div>
     </div>
 
     <div id="language-gate">
-        <div class="gate-title">OOTLANKA<br>FOREST PARTY 2026</div>
-        <p style="color: #aaa; margin-bottom: 20px;">Tap to Enter Experience</p>
-        <button class="lang-btn" onclick="enterSite('te')">తెలుగు</button>
-        <button class="lang-btn" onclick="enterSite('en')">English</button>
+        <h1 style="color:white; font-family:'Cinzel Decorative'; margin-bottom:30px;">Choose Your Journey</h1>
+        <button class="lang-btn" onclick="startExperience('en')">English Experience</button>
+        <button class="lang-btn" onclick="startExperience('te')">తెలుగు అనుభవం</button>
     </div>
 
-    <div class="container">
-        
-        <section class="hero">
-            <div class="holo-container" id="guest-holo">
-                <div class="holo-ring"></div>
-                <img id="guest-img" class="holo-img" src="" alt="Guest">
-            </div>
-
-            <div id="welcome-msg" style="color: var(--neon-green); font-size: 1.2rem; margin-bottom: 10px; font-weight: bold; letter-spacing: 1px;"></div>
+    <div id="main-app">
+        <div class="vine-line"></div>
+        <div class="container">
             
-            <h1 class="title-glitch">FOREST<br>NYE 2026</h1>
-            
-            <p class="hero-subtitle" id="loc-text">📍 Munirathna Farm, Ootlanka Forest</p>
-            
-            <div class="countdown">
-                <div class="cd-unit"><span class="cd-num" id="d">0</span><span class="cd-label">Days</span></div>
-                <div class="cd-unit"><span class="cd-num" id="h">0</span><span class="cd-label">Hrs</span></div>
-                <div class="cd-unit"><span class="cd-num" id="m">0</span><span class="cd-label">Min</span></div>
-                <div class="cd-unit"><span class="cd-num" id="s">0</span><span class="cd-label">Sec</span></div>
+            <section class="hero">
+                <div class="vip-card" id="vip-area">
+                    <img id="vip-img" src="" alt="Guest Image">
+                </div>
+                
+                <p id="wel-txt" style="color:var(--gold); font-family:'Great Vibes'; font-size:2rem; margin-bottom:10px;"></p>
+                <h1 class="title-cinematic">THE OOTLANKA<br>LEGEND 2026</h1>
+                <p style="letter-spacing:4px; font-size:0.9rem; opacity:0.7;">DECEMBER 31 // MUNIRATHNA FARM</p>
+                
+                <div style="margin-top:50px; animation: pulse 2s infinite; color:var(--gold);">
+                    SCROLL TO EXPLORE THE SAGA ↓
+                </div>
+            </section>
+
+            <div class="event-card">
+                <div class="flower">🌸</div>
+                <div class="card-header" id="h-journey">THE PILGRIMAGE</div>
+                <div class="card-body">
+                    <p id="p-bike">Bikes park at Venkojigaripalle Village.</p>
+                    <p id="p-tractor" class="highlight" style="margin-top:10px;">THE TRACTOR CONVOY: 20 Members. ONE Tractor. Village to Forest. Maximum Chaos & Fun!</p>
+                </div>
             </div>
 
-            <div class="scroll-hint" onclick="document.getElementById('plan-start').scrollIntoView()">
-                <div class="scroll-text">SCROLL DOWN</div>
-                <div class="arrow-down"></div>
+            <div class="event-card">
+                <div class="flower">🌸</div>
+                <div class="card-header" id="h-feast">FOREST FEAST</div>
+                <div class="card-body">
+                    <p id="p-cook1">7:30 PM: Woodfire Cooking starts (Chapati & Chicken/Veg Curry).</p>
+                    <p id="p-dinner" style="margin-top:10px;">9:45 PM: The Grand Forest Dinner.</p>
+                </div>
             </div>
-        </section>
 
-        <div class="section-card card-gold" id="plan-start">
-            <h2 class="card-title"><span style="font-size:2rem">🚜</span> <span id="title-journey">THE JOURNEY</span></h2>
-            <div class="detail-row">
-                <div class="icon">🏍️</div>
-                <div class="desc" id="txt-bike">Park bikes at Venkojigaripalle Village (Friends' homes).</div>
+            <div class="event-card">
+                <div class="flower">🌸</div>
+                <div class="card-header" id="h-party">THE CELEBRATION</div>
+                <div class="card-body" id="p-mic">
+                    10:30 PM: Generator & DJ Lights ON.<br>
+                    <span class="highlight">OPEN MIC:</span> Sharing our 2025 Heart-stories (Sad, Happy, Bad) with Music and Dance!
+                </div>
             </div>
-            <div class="detail-row">
-                <div class="icon">🚜</div>
-                <div class="desc highlight" id="txt-tractor"><b>THE TRACTOR CONVOY:</b> All members in ONE Tractor! Travelling from Village to Forest together. Maximum Fun Guaranteed!</div>
+
+            <div class="event-card">
+                <div class="flower">🌸</div>
+                <div class="card-header" id="h-mid">THE AWAKENING (2026)</div>
+                <div class="card-body">
+                    <p id="p-cake" style="font-size:1.4rem; color:var(--gold);">12:00 AM: CAKE CUTTING CELEBRATION!</p>
+                    <p id="p-cook2" style="margin-top:10px; border-top:1px dashed rgba(255,215,0,0.3); padding-top:10px;">
+                        <b>ROUND 2:</b> 2 Big Country Chickens (12kg). Cooking Biryani & Pakoda until 6:00 AM Sunrise.
+                    </p>
+                </div>
             </div>
+
+            <div class="event-card" style="border-top: 4px solid red;">
+                <div class="card-header" style="color:red;" id="h-rules">THE CODE OF CONDUCT</div>
+                <div class="card-body">
+                    <p id="p-strict">Zero Tolerance: Over-drinking, Fighting, Bullying. Pure Brotherhood Only.</p>
+                    <p id="p-fee" style="margin-top:10px; color:var(--gold);">Entry: Min Rs. 300 (Maximum is your wish).</p>
+                </div>
+            </div>
+
+            <footer id="admin-trigger">
+                © 2026 OOTLANKA FRIENDS
+            </footer>
         </div>
-
-        <div class="section-card card-purple">
-            <h2 class="card-title"><span style="font-size:2rem">🔥</span> <span id="title-schedule">31st NIGHT PLAN</span></h2>
-            <div class="detail-row">
-                <div class="icon">🥘</div>
-                <div class="desc" id="txt-cook1"><b>7:30 PM - 9:45 PM:</b> Cooking Starts! Making Chapati & Chicken/Veg Curry on wood fire.</div>
-            </div>
-            <div class="detail-row">
-                <div class="icon">🍽️</div>
-                <div class="desc" id="txt-eat1"><b>9:45 PM:</b> Grand Forest Dinner.</div>
-            </div>
-            <div class="detail-row">
-                <div class="icon">🎤</div>
-                <div class="desc" id="txt-mic"><b>10:30 PM - 12:00 AM:</b> Party Mode ON! Generator & DJ Lights. <br><span class="highlight">OPEN MIC:</span> Dancing, Singing, and sharing our 2025 Problems, Sadness, and Happiness on the mic.</div>
-            </div>
-        </div>
-
-        <div class="section-card card-blue">
-            <h2 class="card-title"><span style="font-size:2rem">🎆</span> <span id="title-nye">THE AWAKENING (2026)</span></h2>
-            <div class="detail-row">
-                <div class="icon">🎂</div>
-                <div class="desc" id="txt-cake"><b>12:00 AM:</b> Cake Cutting & Celebration!</div>
-            </div>
-            <div class="detail-row">
-                <div class="icon">🐓</div>
-                <div class="desc highlight" id="txt-cook2"><b>MIDNIGHT COOKING (Round 2):</b> Cutting 2 Big Country Chickens (~12kg). Making fresh Chicken Biryani, Pakoda & Curry from 12 AM to Morning.</div>
-            </div>
-            <div class="detail-row">
-                <div class="icon">🌅</div>
-                <div class="desc" id="txt-morning">Eat again and return home around 6 AM - 7 AM.</div>
-            </div>
-        </div>
-
-        <div class="section-card" style="border-left: 4px solid red;">
-            <h2 class="card-title"><span style="font-size:2rem">⚠️</span> <span id="title-rules">RULES & ENTRY</span></h2>
-            <div class="detail-row">
-                <div class="icon">🚫</div>
-                <div class="desc" style="color:#ff6b6b; font-weight:bold;" id="txt-strict">Strictly Prohibited: Over Drinking, Fighting, Bullying.</div>
-            </div>
-            <div class="detail-row">
-                <div class="icon">💰</div>
-                <div class="desc" id="txt-fee">Entry Fee: Min Rs. 300 (Maximum is your choice).</div>
-            </div>
-        </div>
-
-        <footer id="admin-trigger">
-            © 2026 Ootlanka Friends<br><span style="font-size:0.7rem; opacity:0.5;">(Tap 3 times for Admin)</span>
-        </footer>
-
     </div>
 
-    <div id="admin-modal">
-        <h2 style="color:var(--neon-green); font-family:'Audiowide'">ADMIN PANEL</h2>
-        <p style="color:#aaa; margin-bottom:20px;">Create Custom Invitation Link</p>
+    <div id="admin-panel">
+        <h2 style="color:var(--gold); margin-bottom:20px;">Invitation Generator</h2>
+        <input type="text" id="a-name" class="admin-input" placeholder="Guest Name">
+        <input type="file" id="a-photo" class="admin-input" accept="image/*">
+        <div id="a-status" style="color:var(--gold); margin-bottom:10px;"></div>
+        <button class="admin-btn" onclick="generateLink()">Create Invitation Link</button>
         
-        <label style="color:white">1. Guest Name:</label>
-        <input type="text" id="admin-name" placeholder="Enter Name (e.g. Raju)">
-        
-        <label style="color:white">2. Guest Photo (Auto-Compressed):</label>
-        <input type="file" id="admin-photo" accept="image/*" style="background:#333; color:white; padding:10px;">
-        <div id="compress-status" style="color:var(--neon-gold); font-size:0.8rem; margin:5px 0;"></div>
-
-        <button class="btn-action" onclick="generateLink()">GENERATE LINK</button>
-
-        <div id="result-div" style="display:none; margin-top:20px;">
-            <p style="color:white">Send this link:</p>
-            <textarea id="final-link" readonly style="height:80px; font-size:0.8rem; color:var(--neon-green);"></textarea>
-            <button class="btn-action" style="background:#444; color:white;" onclick="copyLink()">COPY LINK</button>
+        <div id="a-result" style="display:none; margin-top:20px;">
+            <p style="color:white;">Copy Link:</p>
+            <textarea id="final-url" class="admin-input" style="height:80px;"></textarea>
+            <button class="admin-btn" style="background:#444; color:white;" onclick="copyLink()">Copy to Clipboard</button>
         </div>
-
-        <button onclick="document.getElementById('admin-modal').style.display='none'" style="background:transparent; color:#888; border:none; width:100%; padding:20px; margin-top:20px;">Close</button>
+        <button onclick="document.getElementById('admin-panel').style.display='none'" style="margin-top:20px; color:#888; background:none; border:none; width:100%;">Close Admin</button>
     </div>
 
     <script>
-        // --- 1. CONTENT DATABASE ---
+        // --- CONTENT DICTIONARY ---
         const content = {
             en: {
-                welcome: "Welcome to the Party,",
-                loc: "📍 Munirathna Farm, Ootlanka Forest",
-                titleJourney: "THE JOURNEY",
-                bike: "Park bikes at Venkojigaripalle Village (Friends' homes).",
-                tractor: "<b>THE TRACTOR CONVOY:</b> All members in ONE Tractor! Travelling from Village to Forest together. Maximum Fun Guaranteed!",
-                titleSchedule: "31st NIGHT PLAN",
-                cook1: "<b>7:30 PM - 9:45 PM:</b> Cooking Starts! Making Chapati & Chicken/Veg Curry on wood fire.",
-                eat1: "<b>9:45 PM:</b> Grand Forest Dinner.",
-                mic: "<b>10:30 PM - 12:00 AM:</b> Generator & DJ Lights ON. <br><span class='highlight'>OPEN MIC:</span> Dancing, Singing, and sharing our 2025 Problems, Sadness, and Happiness.",
-                titleNye: "THE AWAKENING (2026)",
-                cake: "<b>12:00 AM:</b> Cake Cutting & Celebration!",
-                cook2: "<b>MIDNIGHT COOKING (Round 2):</b> Cutting 2 Big Country Chickens (~12kg). Making fresh Chicken Biryani, Pakoda & Curry from 12 AM to Morning.",
-                morning: "Eat again and return home around 6 AM - 7 AM.",
-                titleRules: "RULES & ENTRY",
-                strict: "Strictly Prohibited: Over Drinking, Fighting, Bullying.",
-                fee: "Entry Fee: Min Rs. 300 (Maximum is your choice)."
+                wel: "Welcome to the Saga, ",
+                h_journey: "THE PILGRIMAGE",
+                p_bike: "Bikes park at Venkojigaripalle Village (Friends' homes).",
+                p_tractor: "THE TRACTOR CONVOY: All 20 members in ONE vehicle. Village to Ootlanka. Maximum Thrill!",
+                h_feast: "FOREST FEAST",
+                p_cook1: "7:30 PM: Woodfire Cooking starts (Chapati & Chicken/Veg Curry).",
+                p_dinner: "9:45 PM: The Grand Forest Dinner.",
+                h_party: "THE CELEBRATION",
+                p_mic: "10:30 PM: Generator & DJ Lights ON.<br><span class='highlight'>OPEN MIC:</span> Sharing our 2025 Heart-stories (Sad, Happy, Bad) with Music and Dance!",
+                h_mid: "THE AWAKENING (2026)",
+                p_cake: "12:00 AM: CAKE CUTTING CELEBRATION!",
+                p_cook2: "<b>ROUND 2:</b> 2 Big Country Chickens (12kg). Cooking Biryani & Pakoda until 6:00 AM Sunrise.",
+                h_rules: "THE CODE OF CONDUCT",
+                p_strict: "Zero Tolerance: No Fighting, No Bullying, No Over Drinking. Let's make it beautiful.",
+                p_fee: "Entry: Min Rs. 300 (Max is your choice)."
             },
             te: {
-                welcome: "పార్టీకి స్వాగతం,",
-                loc: "📍 మునిరత్న గారి తోట, ఊట్లంక అడవి",
-                titleJourney: "ప్రయాణం - ప్లాన్",
-                bike: "మన బైక్‌లని వెంకోజిగారిపల్లెలో స్నేహితుల ఇళ్లలో పెట్టాలి.",
-                tractor: "<b>ట్రాక్టర్ యాత్ర:</b> మనమందరం ఒకే ట్రాక్టర్‌లో ఊరి నుండి అడవికి! ఆ మజానే వేరు!",
-                titleSchedule: "31st రాత్రి ప్రోగ్రాం",
-                cook1: "<b>7:30 PM - 9:45 PM:</b> వంట మొదలు! కట్టెల పొయ్యి మీద చపాతీ మరియు చికెన్/వెజ్ కర్రీ.",
-                eat1: "<b>9:45 PM:</b> వన భోజనం.",
-                mic: "<b>10:30 PM - 12:00 AM:</b> జనరేటర్, DJ లైట్లు ఆన్. <br><span class='highlight'>ఓపెన్ మైక్:</span> డ్యాన్స్, పాటలు.. మన 2025 కష్ట సుఖాలు మైక్ లో పంచుకుందాం.",
-                titleNye: "నూతన సంవత్సరం (2026)",
-                cake: "<b>12:00 AM:</b> 2026 కేక్ కటింగ్!",
-                cook2: "<b>రెండవ రౌండ్ వంట:</b> 2 పెద్ద నాటు కోళ్లు (12kg) కోసి.. రాత్రంతా చికెన్ బిర్యానీ, పకోడా వండుకుని తినడమే!",
-                morning: "శుభ్రంగా తిని ఉదయం 6-7 గంటలకు ఇంటికి.",
-                titleRules: "నియమాలు",
-                strict: "గొడవలు, అతిగా తాగడం, హేళన చేయడం పూర్తిగా నిషేధం.",
-                fee: "ఎంట్రీ ఫీజు: కనీసం రూ. 300 (మీ ఇష్టం)."
+                wel: "స్వాగతం, ",
+                h_journey: "ప్రయాణం - ప్లాన్",
+                p_bike: "మన బైక్‌లని వెంకోజిగారిపల్లెలో స్నేహితుల ఇళ్లలో పెట్టాలి.",
+                p_tractor: "ట్రాక్టర్ యాత్ర: అందరం ఒకే ట్రాక్టర్లో.. అడవికి పయనం! మజా మామూలుగా ఉండదు!",
+                h_feast: "వన విందు",
+                p_cook1: "7:30 PM: వంట మొదలు (కట్టెల పొయ్యి మీద చపాతీ & నాటు కోడి).",
+                p_dinner: "9:45 PM: అందరం కలిసి వన భోజనం.",
+                h_party: "సంబరాలు",
+                p_mic: "10:30 PM: DJ లైట్లు & జనరేటర్ ఆన్.<br><span class='highlight'>ఓపెన్ మైక్:</span> డ్యాన్స్, పాటలు.. 2025 మన కష్ట సుఖాలు మైక్ లో పంచుకుందాం.",
+                h_mid: "నూతన సంవత్సరం 2026",
+                p_cake: "12:00 AM: కొత్త సంవత్సరానికి కేక్ కటింగ్!",
+                p_cook2: "<b>రెండవ రౌండ్:</b> 2 పెద్ద నాటు కోళ్లు (12kg). తెల్లవార్లు బిర్యానీ & పకోడా వండుకుని తినడమే!",
+                h_rules: "నియమాలు",
+                p_strict: "గొడవలు, హేళనలు, అతిగా తాగడం పూర్తిగా నిషేధం. గౌరవంగా పార్టీ చేసుకుందాం.",
+                p_fee: "చందా: కనీసం రూ. 300 (మీ ఇష్టం)."
             }
         };
 
-        // --- 2. LOGIC & ANIMATION ---
-        let currentLang = 'en';
-        let compressedImgData = "";
+        let compressedImg = "";
 
-        function enterSite(lang) {
-            currentLang = lang;
+        // --- CORE LOGIC ---
+        function openEnvelope() {
+            document.getElementById('open-sfx').play();
+            const env = document.querySelector('.envelope');
+            env.classList.add('open');
             
-            // Start Audio
-            const music = document.getElementById('bg-music');
-            music.volume = 0.5;
-            music.play().then(() => {
-                document.getElementById('music-control').style.display = 'flex';
-            }).catch(e => console.log("Audio requires interaction"));
+            setTimeout(() => {
+                gsap.to('#invitation-cover', { opacity: 0, duration: 1, onComplete: () => {
+                    document.getElementById('invitation-cover').style.display = 'none';
+                    document.getElementById('language-gate').style.display = 'flex';
+                }});
+            }, 800);
+        }
 
-            // Animate Gate Away
-            gsap.to('#language-gate', { opacity: 0, duration: 1, onComplete: () => {
+        function startExperience(lang) {
+            // Start BGM
+            const bgm = document.getElementById('bgm');
+            bgm.volume = 0.5;
+            bgm.play();
+
+            // Setup Data
+            const t = content[lang];
+            const urlP = new URLSearchParams(window.location.search);
+            const guest = urlP.get('guest');
+            const pic = urlP.get('pic');
+
+            if(guest) document.getElementById('wel-txt').innerText = t.wel + decodeURIComponent(guest);
+            if(pic) {
+                document.getElementById('vip-area').style.display = 'block';
+                document.getElementById('vip-img').src = decodeURIComponent(pic);
+            }
+
+            // Fill Content
+            document.getElementById('h-journey').innerText = t.h_journey;
+            document.getElementById('p-bike').innerText = t.p_bike;
+            document.getElementById('p-tractor').innerHTML = t.p_tractor;
+            document.getElementById('h_feast').innerText = t.h_feast;
+            document.getElementById('p-cook1').innerHTML = t.p_cook1;
+            document.getElementById('p-dinner').innerHTML = t.p_dinner;
+            document.getElementById('h-party').innerText = t.h_party;
+            document.getElementById('p-mic').innerHTML = t.p_mic;
+            document.getElementById('h-mid').innerText = t.h_mid;
+            document.getElementById('p-cake').innerHTML = t.p_cake;
+            document.getElementById('p-cook2').innerHTML = t.p_cook2;
+            document.getElementById('h-rules').innerText = t.h_rules;
+            document.getElementById('p-strict').innerText = t.p_strict;
+            document.getElementById('p-fee').innerText = t.p_fee;
+
+            // Transition
+            gsap.to('#language-gate', { opacity: 0, duration: 0.8, onComplete: () => {
                 document.getElementById('language-gate').style.display = 'none';
-                document.querySelector('.container').style.opacity = 1;
-                loadContent();
-                initAnimations();
+                document.body.style.overflow = 'auto';
+                const app = document.getElementById('main-app');
+                app.style.display = 'block';
+                gsap.to(app, { opacity: 1, duration: 1.5 });
+                
+                triggerScrollAnimations();
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             }});
         }
 
-        function toggleMusic() {
-            const music = document.getElementById('bg-music');
-            const bars = document.querySelector('.music-bars');
-            if(music.paused) {
-                music.play();
-                bars.classList.remove('paused');
-            } else {
-                music.pause();
-                bars.classList.add('paused');
-            }
-        }
-
-        function loadContent() {
-            const t = content[currentLang];
-            const params = new URLSearchParams(window.location.search);
-            const guest = params.get('guest');
-            const pic = params.get('pic');
-
-            // Set Texts
-            document.getElementById('loc-text').innerText = t.loc;
-            document.getElementById('title-journey').innerHTML = t.titleJourney;
-            document.getElementById('txt-bike').innerText = t.bike;
-            document.getElementById('txt-tractor').innerHTML = t.tractor;
-            document.getElementById('title-schedule').innerHTML = t.titleSchedule;
-            document.getElementById('txt-cook1').innerHTML = t.cook1;
-            document.getElementById('txt-eat1').innerHTML = t.eat1;
-            document.getElementById('txt-mic').innerHTML = t.mic;
-            document.getElementById('title-nye').innerHTML = t.titleNye;
-            document.getElementById('txt-cake').innerHTML = t.cake;
-            document.getElementById('txt-cook2').innerHTML = t.cook2;
-            document.getElementById('txt-morning').innerText = t.morning;
-            document.getElementById('title-rules').innerHTML = t.titleRules;
-            document.getElementById('txt-strict').innerText = t.strict;
-            document.getElementById('txt-fee').innerText = t.fee;
-
-            // Handle Guest Info
-            if(guest) {
-                document.getElementById('welcome-msg').innerText = `${t.welcome} ${decodeURIComponent(guest)}`;
-                triggerConfetti();
-            }
-            if(pic) {
-                document.getElementById('guest-holo').style.display = 'block';
-                document.getElementById('guest-img').src = decodeURIComponent(pic);
-            }
-        }
-
-        function initAnimations() {
-            // Hero Entry
-            gsap.from('.hero > *', { y: 50, opacity: 0, duration: 1, stagger: 0.2, ease: "back.out" });
-            
-            // Scroll Trigger for Cards
-            gsap.utils.toArray('.section-card').forEach(card => {
-                gsap.to(card, {
-                    scrollTrigger: { trigger: card, start: "top 85%" },
-                    y: 0, opacity: 1, duration: 0.8, ease: "power2.out"
+        function triggerScrollAnimations() {
+            gsap.utils.toArray('.event-card').forEach(card => {
+                ScrollTrigger.create({
+                    trigger: card,
+                    start: "top 85%",
+                    onEnter: () => {
+                        card.classList.add('active');
+                        gsap.fromTo(card.querySelector('.flower'), {scale:0}, {scale:1, opacity:1, duration:0.5});
+                    }
                 });
             });
         }
 
-        // --- 3. BACKGROUND PARTICLES (FIREFLIES) ---
-        const canvas = document.getElementById('canvas-bg');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        const particles = [];
-        for(let i=0; i<80; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: Math.random() * 2,
-                speedY: Math.random() * 0.5 - 0.25,
-                speedX: Math.random() * 0.5 - 0.25,
-                color: Math.random() > 0.5 ? '#39ff14' : '#00f3ff'
-            });
-        }
+        // --- BACKGROUND FX ---
+        function initBackground() {
+            // Snow
+            const sc = document.getElementById('snow-canvas');
+            const sctx = sc.getContext('2d');
+            sc.width = window.innerWidth; sc.height = window.innerHeight;
+            const flakes = [];
+            for(let i=0; i<100; i++) flakes.push({x:Math.random()*sc.width, y:Math.random()*sc.height, r:Math.random()*2, d:Math.random()*1});
 
-        function animateBg() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.x += p.speedX; p.y += p.speedY;
-                if(p.x < 0) p.x = canvas.width; if(p.x > canvas.width) p.x = 0;
-                if(p.y < 0) p.y = canvas.height; if(p.y > canvas.height) p.y = 0;
-                
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-                ctx.fillStyle = p.color;
-                ctx.shadowBlur = 10; ctx.shadowColor = p.color;
-                ctx.fill();
-            });
-            requestAnimationFrame(animateBg);
-        }
-        animateBg();
+            // Fire
+            const fc = document.getElementById('fire-canvas');
+            const fctx = fc.getContext('2d');
+            fc.width = window.innerWidth; fc.height = window.innerHeight;
+            const particles = [];
+            
+            function animate() {
+                // Snow draw
+                sctx.clearRect(0,0,sc.width, sc.height);
+                sctx.fillStyle = "white";
+                sctx.beginPath();
+                flakes.forEach(f => {
+                    f.y += f.d; if(f.y > sc.height) f.y = 0;
+                    sctx.moveTo(f.x, f.y); sctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+                });
+                sctx.fill();
 
-        // --- 4. ADMIN FEATURES ---
+                // Fire draw (Simplistic)
+                fctx.clearRect(0,0,fc.width, fc.height);
+                fctx.globalCompositeOperation = "lighter";
+                if(particles.length < 50) particles.push({x:fc.width/2 + (Math.random()*60-30), y:fc.height-20, s:Math.random()*20, v:Math.random()*2});
+                particles.forEach((p, i) => {
+                    p.y -= p.v; p.s *= 0.96;
+                    fctx.beginPath(); fctx.arc(p.x, p.y, p.s, 0, Math.PI*2);
+                    fctx.fillStyle = `rgba(255, ${Math.random()*100}, 0, 0.5)`;
+                    fctx.fill();
+                    if(p.s < 1) particles.splice(i, 1);
+                });
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+        initBackground();
+
+        // --- ADMIN FUNCTIONS ---
         let adminClicks = 0;
         document.getElementById('admin-trigger').addEventListener('click', () => {
             adminClicks++;
             if(adminClicks === 3) {
-                document.getElementById('admin-modal').style.display = 'block';
+                document.getElementById('admin-panel').style.display = 'block';
                 adminClicks = 0;
             }
-            setTimeout(() => adminClicks = 0, 1500);
+            setTimeout(() => adminClicks = 0, 2000);
         });
 
-        // Image Compression Logic
-        document.getElementById('admin-photo').addEventListener('change', function(e) {
+        document.getElementById('a-photo').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if(!file) return;
-            
-            document.getElementById('compress-status').innerText = "Compressing...";
+            document.getElementById('a-status').innerText = "Processing Photo...";
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = function(event) {
@@ -498,58 +466,33 @@
                 img.src = event.target.result;
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_SIZE = 200; // Small size for Hologram style & Short URL
-                    let width = img.width; let height = img.height;
-                    
-                    if (width > height) {
-                        if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
-                    } else {
-                        if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
-                    }
-                    
-                    canvas.width = width; canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    compressedImgData = canvas.toDataURL('image/jpeg', 0.5); // Low quality JPEG
-                    document.getElementById('compress-status').innerText = "Ready!";
+                    const MAX = 200;
+                    let w = img.width, h = img.height;
+                    if(w > h) { if(w > MAX) { h *= MAX/w; w = MAX; } }
+                    else { if(h > MAX) { w *= MAX/h; h = MAX; } }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    compressedImg = canvas.toDataURL('image/jpeg', 0.6);
+                    document.getElementById('a-status').innerText = "Photo Ready!";
                 }
             }
         });
 
         function generateLink() {
-            const name = document.getElementById('admin-name').value;
-            if(!name) return alert("Enter Name");
-            
+            const name = document.getElementById('a-name').value;
+            if(!name) return alert("Enter Guest Name");
             let url = window.location.href.split('?')[0] + `?guest=${encodeURIComponent(name)}`;
-            if(compressedImgData) url += `&pic=${encodeURIComponent(compressedImgData)}`;
-            
-            document.getElementById('result-div').style.display = 'block';
-            document.getElementById('final-link').value = url;
+            if(compressedImg) url += `&pic=${encodeURIComponent(compressedImg)}`;
+            document.getElementById('a-result').style.display = 'block';
+            document.getElementById('final-url').value = url;
         }
 
         function copyLink() {
-            const txt = document.getElementById('final-link');
-            txt.select();
-            document.execCommand('copy');
-            alert("Copied!");
+            const copyText = document.getElementById('final-url');
+            copyText.select();
+            document.execCommand("copy");
+            alert("Invitation Link Copied!");
         }
-
-        // --- 5. UTILS ---
-        function triggerConfetti() {
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-        }
-
-        // Countdown
-        setInterval(() => {
-            const diff = new Date("Dec 31, 2025 19:00:00").getTime() - new Date().getTime();
-            if(diff > 0) {
-                document.getElementById('d').innerText = Math.floor(diff / (1000*60*60*24));
-                document.getElementById('h').innerText = Math.floor((diff % (1000*60*60*24))/(1000*60*60));
-                document.getElementById('m').innerText = Math.floor((diff % (1000*60*60))/(1000*60));
-                document.getElementById('s').innerText = Math.floor((diff % (1000*60))/1000);
-            }
-        }, 1000);
-
     </script>
 </body>
 </html>
