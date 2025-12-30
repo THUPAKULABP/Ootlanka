@@ -7,7 +7,7 @@
     <title>The Ootlanka Saga 2026</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Ramabhadra&family=Great+Vibes&family=Montserrat:wght@300;600&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Ramabhadra&family=Great+Vibes&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -16,10 +16,8 @@
     <style>
         :root {
             --gold: #FFD700;
-            --gold-glow: rgba(255, 215, 0, 0.6);
+            --gold-glow: rgba(255, 215, 0, 0.8);
             --jungle-dark: #020a05;
-            --fire: #ff4d00;
-            --ice: #e0f7fa;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -28,155 +26,122 @@
             background-color: var(--jungle-dark); 
             color: white; 
             font-family: 'Montserrat', sans-serif; 
-            overflow: hidden; /* Locked for intro */
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        #scroll-progress {
+            position: fixed; top: 0; left: 0; width: 0%; height: 4px;
+            background: var(--gold); z-index: 10001; box-shadow: 0 0 10px var(--gold);
         }
 
         /* --- BACKGROUND SCENERY --- */
         #snow-canvas, #fire-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
         .moon { 
-            position: fixed; top: 50px; right: 50px; width: 100px; height: 100px; 
+            position: fixed; top: 40px; right: 40px; width: 80px; height: 80px; 
             background: radial-gradient(circle, #fff 0%, #aaa 100%); 
-            border-radius: 50%; box-shadow: 0 0 60px var(--ice); 
-            z-index: -2; opacity: 0.8; 
+            border-radius: 50%; box-shadow: 0 0 50px #e0f7fa; z-index: -2; opacity: 0.6; 
         }
 
-        /* --- VINE DECORATION --- */
         .vine-corner {
-            position: fixed; top: 0; width: 200px; height: 200px; 
+            position: fixed; top: 0; width: 150px; height: 150px; 
             background-image: url('https://www.transparentpng.com/download/leaves/green-leaves-png-images-9.png');
             background-size: contain; background-repeat: no-repeat;
-            z-index: 2000; pointer-events: none; opacity: 0.6; filter: brightness(0.5) sepia(1) hue-rotate(10deg);
+            z-index: 2000; pointer-events: none; opacity: 0.5; filter: brightness(0.7);
         }
-        .v-left { left: 0; transform: rotate(-10deg); }
-        .v-right { right: 0; transform: scaleX(-1) rotate(-10deg); }
+        .v-left { left: 0; }
+        .v-right { right: 0; transform: scaleX(-1); }
 
-        /* --- SCENE 1: THE ROYAL ENVELOPE --- */
+        /* --- INTRO FIX --- */
         #intro-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 10000; display: flex;
             justify-content: center; align-items: center; flex-direction: column;
+            transition: opacity 0.8s ease;
         }
 
         .envelope {
-            width: 300px; height: 200px; background: #111;
+            width: 280px; height: 180px; background: #1a1a1a;
             border: 2px solid var(--gold); position: relative;
-            transform-style: preserve-3d; cursor: pointer;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
-            border-radius: 10px; transition: transform 0.5s;
+            cursor: pointer; border-radius: 10px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.9);
+            display: flex; justify-content: center; align-items: center;
         }
-
-        .envelope:active { transform: scale(0.95); }
 
         .wax-seal {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 70px; height: 70px; background: radial-gradient(circle, #b00, #500);
-            border-radius: 50%; border: 3px solid var(--gold); z-index: 10;
+            width: 70px; height: 70px; background: #b00;
+            border-radius: 50%; border: 3px solid var(--gold);
             display: flex; justify-content: center; align-items: center;
             font-family: 'Great Vibes'; color: var(--gold); font-size: 1.8rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
         }
 
-        .tap-msg {
-            margin-top: 40px; font-family: 'Cinzel Decorative'; color: var(--gold);
-            letter-spacing: 3px; animation: pulse 2s infinite; text-align: center;
-        }
-
-        /* --- SCENE 2: LANGUAGE GATE --- */
+        /* --- LANGUAGE GATE FIX --- */
         #language-gate {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 9000; display: none;
+            background: rgba(0,0,0,0.95); z-index: 9500; display: none;
             flex-direction: column; justify-content: center; align-items: center;
-            backdrop-filter: blur(20px);
-        }
-
-        .gate-title {
-            font-family: 'Cinzel Decorative'; font-size: 1.8rem; color: #fff;
-            margin-bottom: 40px; text-align: center; padding: 0 20px;
         }
 
         .lang-btn {
-            background: transparent; border: 2px solid var(--gold); color: var(--gold);
-            padding: 20px 50px; margin: 15px; font-size: 1.4rem;
+            background: #111; border: 2px solid var(--gold); color: var(--gold) !important;
+            padding: 20px 40px; margin: 15px; font-size: 1.4rem;
             font-family: 'Ramabhadra', 'Cinzel Decorative'; cursor: pointer;
-            transition: 0.4s; width: 280px; border-radius: 5px;
-            text-transform: uppercase;
-        }
-        .lang-btn:hover { background: var(--gold); color: black; box-shadow: 0 0 40px var(--gold); }
-
-        /* --- SCENE 3: MAIN APP --- */
-        #main-content {
-            position: relative; z-index: 10; display: none; opacity: 0;
-            padding-bottom: 100px;
+            width: 280px; border-radius: 12px; text-transform: uppercase;
+            text-align: center; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            display: block; opacity: 1 !important; visibility: visible !important;
         }
 
-        .hero {
-            height: 100vh; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; text-align: center;
-            padding: 20px;
-        }
+        /* --- MAIN APP --- */
+        #main-content { position: relative; z-index: 10; display: none; opacity: 0; padding-bottom: 80px; }
 
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+        
         .vip-photo-circle {
-            width: 180px; height: 180px; border-radius: 50%;
-            border: 4px solid var(--gold); position: relative;
-            margin-bottom: 25px; display: none;
-            box-shadow: 0 0 30px var(--gold-glow);
+            width: 160px; height: 160px; border-radius: 50%; border: 4px solid var(--gold);
+            margin-bottom: 20px; display: none; overflow: hidden; box-shadow: 0 0 30px var(--gold-glow);
         }
-        .vip-photo-circle img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .vip-photo-circle img { width: 100%; height: 100%; object-fit: cover; }
 
         .cinematic-title {
-            font-family: 'Cinzel Decorative'; font-size: 3rem;
+            font-family: 'Cinzel Decorative'; font-size: 2.8rem;
             background: linear-gradient(to bottom, #fff, var(--gold));
-            -webkit-background-clip: text; color: transparent;
-            text-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            margin-bottom: 15px; line-height: 1.1;
+            -webkit-background-clip: text; color: transparent; line-height: 1.1;
         }
 
-        /* JOURNEY CARDS */
+        /* --- CARDS & FLOWERS --- */
+        .card-container { perspective: 1000px; margin: 40px 15px; }
         .card {
-            background: rgba(0, 15, 5, 0.85); border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 25px; padding: 30px; margin: 40px 20px;
-            backdrop-filter: blur(10px); position: relative;
-            transform: translateY(100px); opacity: 0;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            background: rgba(0, 15, 5, 0.9); border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px; padding: 30px; position: relative;
+            transform: translateY(50px) rotateX(10deg); opacity: 0; transition: 0.8s ease-out;
         }
-
-        .card.visible { transform: translateY(0); opacity: 1; transition: 1s ease-out; }
+        .card.visible { transform: translateY(0) rotateX(0); opacity: 1; }
 
         .flower-icon {
-            position: absolute; left: -20px; top: -20px; font-size: 2.5rem;
+            position: absolute; left: -15px; top: -15px; font-size: 2.5rem;
             filter: drop-shadow(0 0 10px var(--gold));
+            animation: float 3s ease-in-out infinite;
         }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        .card-h { font-family: 'Cinzel Decorative'; font-size: 1.5rem; color: var(--gold); margin-bottom: 15px; }
-        .card-p { font-size: 1.05rem; line-height: 1.7; color: #ddd; }
+        .card-h { font-family: 'Cinzel Decorative'; font-size: 1.4rem; color: var(--gold); margin-bottom: 12px; }
+        .card-p { font-size: 1rem; line-height: 1.6; color: #ddd; }
         .accent { color: #00ffcc; font-weight: bold; }
 
-        /* --- ADMIN PANEL --- */
-        #admin-panel {
-            display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 20000; padding: 30px; overflow-y: auto;
-        }
-        .adm-input { width: 100%; padding: 15px; margin-bottom: 15px; background: #111; border: 1px solid #444; color: white; border-radius: 5px; }
-        .adm-btn { width: 100%; padding: 15px; background: var(--gold); font-weight: bold; cursor: pointer; border-radius: 5px; border: none; }
+        /* --- ADMIN --- */
+        #admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; padding: 30px; overflow-y: auto; }
+        .adm-input { width: 100%; padding: 15px; margin-bottom: 15px; background: #111; border: 1px solid #444; color: white; border-radius: 8px; }
+        .adm-btn { width: 100%; padding: 15px; background: var(--gold); font-weight: bold; border-radius: 8px; border: none; cursor: pointer; }
 
-        footer { text-align: center; padding: 50px; color: #444; font-family: 'Cinzel Decorative'; cursor: pointer; }
-
-        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
-
-        @media (max-width: 600px) {
-            .cinematic-title { font-size: 2.2rem; }
-            .card { padding: 20px; margin: 30px 15px; }
-        }
+        footer { text-align: center; padding: 60px; color: #444; font-family: 'Cinzel Decorative'; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <audio id="bgm-audio" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_10842a2754.mp3?filename=dark-mystery-trailer-115629.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="sfx-magic">
-        <source src="https://cdn.pixabay.com/download/audio/2022/03/24/audio_3d15442656.mp3?filename=magic-spell-6005.mp3" type="audio/mpeg">
-    </audio>
+    <div id="scroll-progress"></div>
+    <audio id="bgm-audio" loop preload="auto"><source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_10842a2754.mp3?filename=dark-mystery-trailer-115629.mp3" type="audio/mpeg"></audio>
+    <audio id="sfx-magic" preload="auto"><source src="https://cdn.pixabay.com/download/audio/2022/03/24/audio_3d15442656.mp3?filename=magic-spell-6005.mp3" type="audio/mpeg"></audio>
 
     <div class="moon"></div>
     <div class="vine-corner v-left"></div>
@@ -184,296 +149,159 @@
     <canvas id="snow-canvas"></canvas>
     <canvas id="fire-canvas"></canvas>
 
-    <div id="intro-overlay">
-        <div class="envelope" onclick="openEnvelope()">
+    <div id="intro-overlay" onclick="openEnvelope()">
+        <div class="envelope">
             <div class="wax-seal">2026</div>
         </div>
-        <div class="tap-msg">YOUR ROYAL INVITATION<br>TAP TO OPEN</div>
+        <p style="margin-top:30px; color:var(--gold); font-family:'Cinzel Decorative'; letter-spacing:2px; animation: pulse 2s infinite;">TAP TO OPEN</p>
     </div>
 
     <div id="language-gate">
-        <h2 class="gate-title">CHOOSE YOUR LANGUAGE EXPERIENCE</h2>
+        <h2 style="color:white; margin-bottom:30px; font-family:'Cinzel Decorative';">CHOOSE LANGUAGE</h2>
         <button class="lang-btn" onclick="setLanguage('en')">English</button>
         <button class="lang-btn" onclick="setLanguage('te')">తెలుగు</button>
     </div>
 
     <div id="main-content">
-        <div class="container">
-            
-            <section class="hero">
-                <div class="vip-photo-circle" id="vip-frame">
-                    <img id="vip-photo" src="" alt="Guest VIP">
-                </div>
-                
-                <p id="guest-welcome" style="color:var(--gold); font-family:'Great Vibes'; font-size:2rem; margin-bottom:10px;"></p>
-                <h1 class="cinematic-title">FOREST PARTY<br>SAGA 2026</h1>
-                <p style="letter-spacing:5px; font-size:0.8rem; opacity:0.7;">OOTLANKA | DEC 31</p>
-                
-                <div style="margin-top:60px; color:var(--gold); animation:pulse 2s infinite;">
-                    SCROLL TO DISCOVER THE PLAN ↓
-                </div>
-            </section>
+        <section class="hero">
+            <div class="vip-photo-circle" id="vip-frame"><img id="vip-photo" src=""></div>
+            <p id="guest-welcome" style="color:var(--gold); font-family:'Great Vibes'; font-size:2rem;"></p>
+            <h1 class="cinematic-title">FOREST PARTY<br>SAGA 2026</h1>
+            <p style="letter-spacing:5px; font-size:0.8rem; margin-top:10px;">OOTLANKA | DEC 31</p>
+        </section>
 
-            <div class="card">
-                <div class="flower-icon">🌸</div>
-                <h2 class="card-h" id="h-jour">THE PILGRIMAGE</h2>
-                <div class="card-p">
-                    <p id="p-bike">Bikes park at Venkojigaripalle Village (Friends' homes).</p>
-                    <p id="p-trac" class="accent" style="margin-top:10px;">THE TRACTOR CONVOY: 20 Souls. ONE Tractor. Village to Forest. The legend begins with this ride!</p>
-                </div>
-            </div>
+        <div class="card-container"><div class="card"><div class="flower-icon">🌸</div><h2 class="card-h" id="h-jour"></h2><div class="card-p" id="p-jour"></div></div></div>
+        <div class="card-container"><div class="card"><div class="flower-icon">🌺</div><h2 class="card-h" id="h-cook"></h2><div class="card-p" id="p-cook"></div></div></div>
+        <div class="card-container"><div class="card"><div class="flower-icon">🌻</div><h2 class="card-h" id="h-party"></h2><div class="card-p" id="p-party"></div></div></div>
+        <div class="card-container"><div class="card"><div class="flower-icon">✨</div><h2 class="card-h" id="h-nye"></h2><div class="card-p" id="p-nye"></div></div></div>
+        <div class="card-container"><div class="card" style="border-left:4px solid red;"><h2 class="card-h" id="h-rules" style="color:red"></h2><div class="card-p" id="p-rules"></div></div></div>
 
-            <div class="card">
-                <div class="flower-icon">🌺</div>
-                <h2 class="card-h" id="h-cook">WINTER FEAST</h2>
-                <div class="card-p">
-                    <p id="p-cook1">7:30 PM: Wood-fire cooking begins (Fresh Chapati & Chicken/Veg Curry).</p>
-                    <p id="p-dine" style="margin-top:10px;">9:45 PM: The Grand Forest Dinner under the moon.</p>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="flower-icon">🌻</div>
-                <h2 class="card-h" id="h-party">THE SPECTACLE</h2>
-                <div class="card-p" id="p-mic">
-                    10:30 PM: DJ Lights & Generator Glow.<br>
-                    <span class="accent">OPEN MIC:</span> Sharing our 2025 life stories—the happy, the sad, and the memories—with Music & Dance!
-                </div>
-            </div>
-
-            <div class="card" style="border-top-color: white;">
-                <div class="flower-icon">✨</div>
-                <h2 class="card-h" id="h-nye">THE AWAKENING (2026)</h2>
-                <div class="card-p">
-                    <p id="p-cake" style="font-size:1.4rem; color:var(--gold); font-family:'Cinzel Decorative';">12:00 AM: CAKE CUTTING!</p>
-                    <p id="p-cook2" style="margin-top:15px; border-top:1px dashed rgba(255,215,0,0.3); padding-top:15px;">
-                        <b>ROUND 2:</b> 2 Big Country Chickens (12kg). Cooking Biryani & Pakoda deep into the night until 6:00 AM.
-                    </p>
-                </div>
-            </div>
-
-            <div class="card" style="border-top: 4px solid red;">
-                <h2 class="card-h" style="color:red" id="h-rules">THE COMMANDMENTS</h2>
-                <div class="card-p">
-                    <p id="p-rules">Strictly No Over-drinking, No Fighting, No Bullying. Pure Brotherhood Only.</p>
-                    <p id="p-fee" style="margin-top:10px; color:var(--gold);">Entry: Min Rs. 300 (Maximum is your choice).</p>
-                </div>
-            </div>
-
-            <footer id="admin-trigger">
-                © 2026 OOTLANKA FRIENDS
-            </footer>
-        </div>
+        <footer id="admin-trigger">© 2026 OOTLANKA FRIENDS</footer>
     </div>
 
     <div id="admin-panel">
-        <h2 style="color:var(--gold); margin-bottom:20px;">Invitation Generator</h2>
+        <h2 style="color:var(--gold); margin-bottom:20px;">Admin Panel</h2>
         <input type="text" id="adm-name" class="adm-input" placeholder="Guest Name">
-        <input type="file" id="adm-photo" class="adm-input" accept="image/*">
-        <div id="adm-status" style="color:var(--gold); margin-bottom:10px;"></div>
-        <button class="adm-btn" onclick="generateInvite()">Generate Magical Link</button>
-        <div id="adm-result" style="display:none; margin-top:20px;">
-            <p style="color:white;">Copy Link:</p>
-            <textarea id="adm-url" class="adm-input" style="height:80px;"></textarea>
-            <button class="adm-btn" style="background:#444; color:white;" onclick="copyInvite()">Copy to Clipboard</button>
-        </div>
-        <button onclick="document.getElementById('admin-panel').style.display='none'" style="margin-top:20px; color:#888; background:none; border:none; width:100%;">Close Admin</button>
+        <p style="color:#888; font-size:0.8rem; margin-bottom:5px;">Option 1: Image URL (Recommended for WhatsApp)</p>
+        <input type="text" id="adm-url-input" class="adm-input" placeholder="https://image-link.com/photo.jpg">
+        <p style="color:#888; font-size:0.8rem; margin-bottom:5px;">Option 2: Upload File</p>
+        <input type="file" id="adm-file" class="adm-input" accept="image/*">
+        <button class="adm-btn" onclick="generateLink()">Generate Link</button>
+        <textarea id="result-link" class="adm-input" style="margin-top:20px; height:80px; display:none;"></textarea>
+        <button id="copy-btn" class="adm-btn" style="display:none; background:#444;" onclick="copyLink()">Copy Link</button>
+        <button onclick="document.getElementById('admin-panel').style.display='none'" style="margin-top:20px; background:none; color:#888; width:100%; border:none;">Close</button>
     </div>
 
     <script>
         const content = {
             en: {
                 wel: "Welcome, ",
-                h_jour: "THE PILGRIMAGE",
-                p_bike: "Bikes park at Venkojigaripalle Village (Friends' homes).",
-                p_trac: "THE TRACTOR CONVOY: 20 Members. ONE Tractor. Village to Ootlanka. Maximum Thrill!",
-                h_cook: "WINTER FEAST",
-                p_cook1: "7:30 PM: Wood-fire cooking begins (Fresh Chapati & Chicken/Veg Curry).",
-                p_dine: "9:45 PM: The Grand Forest Dinner under the moon.",
-                h_party: "THE SPECTACLE",
-                p_mic: "10:30 PM: DJ Lights & Generator Glow.<br><span class='accent'>OPEN MIC:</span> Sharing our 2025 life stories—the happy, the sad, and the memories—with Music & Dance!",
-                h_nye: "THE AWAKENING (2026)",
-                p_cake: "12:00 AM: CAKE CUTTING!",
-                p_cook2: "<b>ROUND 2:</b> 2 Big Country Chickens (12kg). Cooking Biryani & Pakoda until 6:00 AM Sunrise.",
-                h_rules: "THE COMMANDMENTS",
-                p_rules: "Strictly No Over-drinking, No Fighting, No Bullying. Pure Brotherhood Only.",
-                p_fee: "Entry: Min Rs. 300 (Max is your choice)."
+                h_jour: "THE PILGRIMAGE", p_jour: "Bikes park at Venkojigaripalle. <span class='accent'>TRACTOR CONVOY:</span> 20 Members, One Tractor. Pure Thrill!",
+                h_cook: "WINTER FEAST", p_cook: "7:30 PM: Wood-fire cooking (Chapati & Chicken). 9:45 PM: Forest Dinner.",
+                h_party: "THE SPECTACLE", p_party: "10:30 PM: DJ Lights & Open Mic. Share your 2025 memories!",
+                h_nye: "2026 AWAKENING", p_nye: "12:00 AM: Cake Cutting! 2:00 AM: Round 2 Biryani & Pakoda.",
+                h_rules: "RULES", p_rules: "No Fighting. No Over-drinking. Brotherhood Only. Entry: Min ₹300."
             },
             te: {
                 wel: "స్వాగతం, ",
-                h_jour: "ప్రయాణం - ప్లాన్",
-                p_bike: "మన బైక్‌లని వెంకోజిగారిపల్లెలో స్నేహితుల ఇళ్లలో పెట్టాలి.",
-                p_trac: "ట్రాక్టర్ యాత్ర: అందరం ఒకే ట్రాక్టర్లో.. అడవికి పయనం! మజా మామూలుగా ఉండదు!",
-                h_cook: "వన విందు",
-                p_cook1: "7:30 PM: వంట మొదలు (కట్టెల పొయ్యి మీద చపాతీ & నాటు కోడి).",
-                p_dine: "9:45 PM: అందరం కలిసి వన భోజనం.",
-                h_party: "సంబరాలు",
-                p_mic: "10:30 PM: DJ లైట్లు & జనరేటర్ ఆన్.<br><span class='accent'>ఓపెన్ మైక్:</span> డ్యాన్స్, పాటలు.. 2025 మన కష్ట సుఖాలు మైక్ లో పంచుకుందాం.",
-                h_nye: "నూతన సంవత్సరం 2026",
-                p_cake: "12:00 AM: కొత్త సంవత్సరానికి కేక్ కటింగ్!",
-                p_cook2: "<b>రెండవ రౌండ్:</b> 2 పెద్ద నాటు కోళ్లు (12kg). తెల్లవార్లు బిర్యానీ & పకోడా వండుకుని తినడమే!",
-                h_rules: "నియమాలు",
-                p_rules: "గొడవలు, హేళనలు, అతిగా తాగడం పూర్తిగా నిషేధం. గౌరవంగా పార్టీ చేసుకుందాం.",
-                p_fee: "చందా: కనీసం రూ. 300 (మీ ఇష్టం)."
+                h_jour: "ప్రయాణం", p_jour: "బైక్స్ వెంకోజిగారిపల్లెలో ఉంచాలి. <span class='accent'>ట్రాక్టర్ యాత్ర:</span> అందరం ఒకే ట్రాక్టర్లో అడవికి!",
+                h_cook: "వన విందు", p_cook: "7:30 PM: చపాతీ & కోడి కూర తయారీ. 9:45 PM: భోజనాలు.",
+                h_party: "సంబరాలు", p_party: "10:30 PM: DJ & ఓపెన్ మైక్. 2025 జ్ఞాపకాలు పంచుకుందాం!",
+                h_nye: "నూతన సంవత్సరం", p_nye: "12:00 AM: కేక్ కటింగ్! 2:00 AM: బిర్యానీ & పకోడా పార్టీ.",
+                h_rules: "నియమాలు", p_rules: "గొడవలు వద్దు. గౌరవంగా పార్టీ చేసుకుందాం. చందా: కనీసం ₹300."
             }
         };
 
-        let compressedImg = "";
+        let uploadedImg = "";
 
-        // --- ENVELOPE OPEN ---
         function openEnvelope() {
-            document.getElementById('sfx-magic').play();
-            gsap.to('.envelope', { scale: 0.8, duration: 0.2 });
-            gsap.to('.envelope', { scale: 1.2, opacity: 0, duration: 0.5, delay: 0.2 });
-            gsap.to('#intro-overlay', { opacity: 0, duration: 1, delay: 0.4, onComplete: () => {
-                document.getElementById('intro-overlay').style.display = 'none';
+            try { document.getElementById('sfx-magic').play(); } catch(e){}
+            const overlay = document.getElementById('intro-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
                 document.getElementById('language-gate').style.display = 'flex';
-                gsap.from('.lang-btn', { y: 50, opacity: 0, stagger: 0.2, duration: 0.8 });
-            }});
+            }, 800);
         }
 
-        // --- LANGUAGE SET ---
         function setLanguage(lang) {
-            // Audio Start
-            const bgm = document.getElementById('bgm-audio');
-            bgm.volume = 0.5;
-            bgm.play();
-
+            try { let a = document.getElementById('bgm-audio'); a.volume = 0.3; a.play(); } catch(e){}
             const t = content[lang];
-            const urlParams = new URLSearchParams(window.location.search);
-            const guest = urlParams.get('guest');
-            const pic = urlParams.get('pic');
+            const params = new URLSearchParams(window.location.search);
+            const guest = params.get('guest');
+            const pic = params.get('pic');
 
             if(guest) document.getElementById('guest-welcome').innerText = t.wel + decodeURIComponent(guest);
-            if(pic) {
-                document.getElementById('vip-frame').style.display = 'block';
-                document.getElementById('vip-photo').src = decodeURIComponent(pic);
+            if(pic) { document.getElementById('vip-frame').style.display = 'block'; document.getElementById('vip-photo').src = decodeURIComponent(pic); }
+
+            document.getElementById('h-jour').innerText = t.h_jour; document.getElementById('p-jour').innerHTML = t.p_jour;
+            document.getElementById('h-cook').innerText = t.h_cook; document.getElementById('p-cook').innerHTML = t.p_cook;
+            document.getElementById('h-party').innerText = t.h_party; document.getElementById('p-party').innerHTML = t.p_party;
+            document.getElementById('h-nye').innerText = t.h_nye; document.getElementById('p-nye').innerHTML = t.p_nye;
+            document.getElementById('h-rules').innerText = t.h_rules; document.getElementById('p-rules').innerHTML = t.p_rules;
+
+            document.getElementById('language-gate').style.display = 'none';
+            const main = document.getElementById('main-content');
+            main.style.display = 'block';
+            setTimeout(() => { main.style.opacity = '1'; triggerAnimations(); }, 100);
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        }
+
+        function triggerAnimations() {
+            const cards = document.querySelectorAll('.card');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('visible'); });
+            }, { threshold: 0.1 });
+            cards.forEach(card => observer.observe(card));
+
+            if(window.gsap) {
+                gsap.to("#scroll-progress", { width: "100%", scrollTrigger: { scrub: 0.3 } });
             }
-
-            // Text mapping
-            document.getElementById('h-jour').innerText = t.h_jour;
-            document.getElementById('p-bike').innerText = t.p_bike;
-            document.getElementById('p-trac').innerHTML = t.p_trac;
-            document.getElementById('h-cook').innerText = t.h_cook;
-            document.getElementById('p-cook1').innerHTML = t.p_cook1;
-            document.getElementById('p-dine').innerHTML = t.p_dine;
-            document.getElementById('h-party').innerText = t.h_party;
-            document.getElementById('p-mic').innerHTML = t.p_mic;
-            document.getElementById('h-nye').innerText = t.h_nye;
-            document.getElementById('p-cake').innerHTML = t.p_cake;
-            document.getElementById('p-cook2').innerHTML = t.p_cook2;
-            document.getElementById('h-rules').innerText = t.h_rules;
-            document.getElementById('p-rules').innerText = t.p_rules;
-            document.getElementById('p-fee').innerText = t.p_fee;
-
-            // Transition out language gate
-            gsap.to('#language-gate', { opacity: 0, duration: 0.8, onComplete: () => {
-                document.getElementById('language-gate').style.display = 'none';
-                document.body.style.overflow = 'auto'; // UNLOCK SCROLL
-                const main = document.getElementById('main-content');
-                main.style.display = 'block';
-                gsap.to(main, { opacity: 1, duration: 1.5 });
-                triggerCardAnimations();
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#FFD700', '#ffffff'] });
-            }});
         }
 
-        function triggerCardAnimations() {
-            gsap.utils.toArray('.card').forEach(card => {
-                ScrollTrigger.create({
-                    trigger: card,
-                    start: "top 85%",
-                    onEnter: () => card.classList.add('visible')
-                });
-            });
-        }
-
-        // --- CANVAS BACKGROUNDS ---
+        // FX
         function initFX() {
-            // Snow
-            const sc = document.getElementById('snow-canvas');
-            const sctx = sc.getContext('2d');
-            sc.width = window.innerWidth; sc.height = window.innerHeight;
-            const flakes = [];
-            for(let i=0; i<80; i++) flakes.push({x:Math.random()*sc.width, y:Math.random()*sc.height, r:Math.random()*3, d:Math.random()*1});
-
-            // Fire (Simplified particles)
-            const fc = document.getElementById('fire-canvas');
-            const fctx = fc.getContext('2d');
-            fc.width = window.innerWidth; fc.height = window.innerHeight;
-            const embers = [];
-
-            function animate() {
-                sctx.clearRect(0,0,sc.width, sc.height);
-                sctx.fillStyle = "white";
-                sctx.beginPath();
-                flakes.forEach(f => {
-                    f.y += f.d; if(f.y > sc.height) f.y = 0;
-                    sctx.moveTo(f.x, f.y); sctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
-                });
-                sctx.fill();
-
-                fctx.clearRect(0,0,fc.width, fc.height);
-                if(embers.length < 40) embers.push({x:fc.width/2 + (Math.random()*100-50), y:fc.height-20, s:Math.random()*15, v:Math.random()*2});
-                embers.forEach((e, i) => {
-                    e.y -= e.v; e.s *= 0.96;
-                    fctx.beginPath(); fctx.arc(e.x, e.y, e.s, 0, Math.PI*2);
-                    fctx.fillStyle = `rgba(255, ${Math.random()*100}, 0, 0.4)`;
-                    fctx.fill();
-                    if(e.s < 1) embers.splice(i, 1);
-                });
-                requestAnimationFrame(animate);
+            const s = document.getElementById('snow-canvas'); const sx = s.getContext('2d');
+            const f = document.getElementById('fire-canvas'); const fx = f.getContext('2d');
+            s.width = f.width = window.innerWidth; s.height = f.height = window.innerHeight;
+            let flakes = []; for(let i=0; i<50; i++) flakes.push({x:Math.random()*s.width, y:Math.random()*s.height, r:Math.random()*2, d:Math.random()*0.5+0.2});
+            function anim() {
+                sx.clearRect(0,0,s.width,s.height); sx.fillStyle="white"; sx.beginPath();
+                flakes.forEach(p => { p.y+=p.d; if(p.y>s.height)p.y=0; sx.moveTo(p.x,p.y); sx.arc(p.x,p.y,p.r,0,Math.PI*2); });
+                sx.fill(); requestAnimationFrame(anim);
             }
-            animate();
+            anim();
         }
         initFX();
 
-        // --- ADMIN ---
-        let ac = 0;
-        document.getElementById('admin-trigger').addEventListener('click', () => {
-            ac++;
-            if(ac === 3) { document.getElementById('admin-panel').style.display = 'block'; ac = 0; }
-            setTimeout(() => ac = 0, 2000);
-        });
+        // Admin
+        let ac = 0; document.getElementById('admin-trigger').onclick = () => { ac++; if(ac==3){document.getElementById('admin-panel').style.display='block'; ac=0;} setTimeout(()=>ac=0,2000); };
+        
+        document.getElementById('adm-file').onchange = (e) => {
+            const reader = new FileReader(); reader.readAsDataURL(e.target.files[0]);
+            reader.onload = () => {
+                const img = new Image(); img.src = reader.result;
+                img.onload = () => {
+                    const c = document.createElement('canvas'); const ctx = c.getContext('2d');
+                    c.width = 150; c.height = 150; ctx.drawImage(img, 0,0,150,150);
+                    uploadedImg = c.toDataURL('image/jpeg', 0.5);
+                };
+            };
+        };
 
-        document.getElementById('adm-photo').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            document.getElementById('adm-status').innerText = "Processing Magic...";
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = function(event) {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX = 250;
-                    let w = img.width, h = img.height;
-                    if(w > h) { if(w > MAX) { h *= MAX/w; w = MAX; } }
-                    else { if(h > MAX) { w *= MAX/h; h = MAX; } }
-                    canvas.width = w; canvas.height = h;
-                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    compressedImg = canvas.toDataURL('image/jpeg', 0.6);
-                    document.getElementById('adm-status').innerText = "Ready!";
-                }
-            }
-        });
-
-        function generateInvite() {
+        function generateLink() {
             const name = document.getElementById('adm-name').value;
-            if(!name) return alert("Guest Name required");
-            let url = window.location.href.split('?')[0] + `?guest=${encodeURIComponent(name)}`;
-            if(compressedImg) url += `&pic=${encodeURIComponent(compressedImg)}`;
-            document.getElementById('adm-result').style.display = 'block';
-            document.getElementById('adm-url').value = url;
+            const linkUrl = document.getElementById('adm-url-input').value;
+            if(!name) return alert("Enter Name");
+            let pic = linkUrl || uploadedImg;
+            let final = window.location.href.split('?')[0] + "?guest=" + encodeURIComponent(name);
+            if(pic) final += "&pic=" + encodeURIComponent(pic);
+            document.getElementById('result-link').value = final;
+            document.getElementById('result-link').style.display = 'block';
+            document.getElementById('copy-btn').style.display = 'block';
         }
 
-        function copyInvite() {
-            const copyText = document.getElementById('adm-url');
-            copyText.select();
-            document.execCommand("copy");
-            alert("Copied!");
-        }
+        function copyLink() { const t = document.getElementById('result-link'); t.select(); document.execCommand('copy'); alert("Copied!"); }
     </script>
 </body>
 </html>
